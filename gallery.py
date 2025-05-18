@@ -52,7 +52,7 @@ def show_gallery():
             "description": "Ramadan is the ninth and holiest month in the Islamic calendar, observed by Muslims through fasting from dawn to sunset, prayer, reflection, and charity. Fasting, or *sawm*, fosters self-discipline and empathy for the less fortunate. The month ends with Eid al-Fitr, a celebration of breaking the fast with prayers, feasts, and family gatherings",
             "things_to_do": "",
             "date": "March 31st(Monday),2025",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/ramadan_1.jpg"
+            "image": "https://github.com/mohammedabsal/GeoBoost/blob/main/assest/ramadan_1.jpeg"
         },
         {
             "name": "Christmas",
