@@ -69,3 +69,11 @@ def show_storyteller():
     data = load_snippets()
     regions = st.multiselect("Select Region(s)", options=sorted(data['REGION'].unique()))
     interests = st.multiselect("Choose Interests", ["Dance", "Food", "Art"])
+    if st.button("Generate Story"):
+        if not regions or not interests:
+            st.warning("Please select at least one region and one interest.")
+        else:
+            with st.spinner("Generating story..."):
+                time.sleep(2)  # Simulate a delay
+                story = generate_story(regions, interests)
+                st.markdown(f"### Your Cultural Story:\n{story}")
