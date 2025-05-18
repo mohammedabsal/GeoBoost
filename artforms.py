@@ -17,8 +17,6 @@ def show_artforms():
 
     query = "SELECT * FROM ARTIST"
     data = pd.read_sql(query, conn)
-    # data = pd.read_csv('data/ARTIST.csv')
-
     # Sidebar Filters
     st.sidebar.header("🔎 Filter Artworks")
     art_form = st.sidebar.multiselect("🖼️ Art Form", options=data['TITLE'].unique(), default=data['TITLE'].unique())
@@ -42,15 +40,24 @@ def show_artforms():
             with st.container():
                 cols = st.columns([1, 2])
                 with cols[0]:
-                    st.image(row['IMAGE_URL'], caption=row['TITLE'], use_container_width=True)
+                    img_url = row['IMAGE_URL']
+                    if isinstance(img_url, str) and img_url.strip().startswith('http'):
+                        st.image(img_url, caption=row['TITLE'], use_container_width=True)
+                    else:
+                        st.warning("No image available.")
                 with cols[1]:
                     st.markdown(f"**🎨 Art Form:** {row['TITLE']}")
                     st.markdown(f"**👩‍🎨 ARTIST:** {row['ARTIST']}")
                     st.markdown(f"**🗺️ Region:** {row['ORIGIN']}")
                     st.markdown(f"**📝 DESCRIPTION:** {row['DESCRIPTION']}")
                     if st.button(f"▶️ Watch Video: {row['TITLE']}", key=f"video_{index}"):
-                        st.video(row['VIDEO_URL'])
+                        vid_url = row['VIDEO_URL']
+                        if isinstance(vid_url, str) and vid_url.strip().startswith('http'):
+                            st.video(vid_url)
+                        else:
+                            st.warning("No video available.")
                 st.markdown("---")
+
 
     # Responsive Design
     st.markdown("""
@@ -68,3 +75,4 @@ def show_artforms():
             }
         </style>
     """, unsafe_allow_html=True)
+show_artforms()
