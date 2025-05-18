@@ -10,3 +10,4 @@ streamlit-lottie
 snowflake-connector-python
 requests
 cohere
+pyarrow<19.0.0
