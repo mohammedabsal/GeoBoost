@@ -6,17 +6,21 @@ def show_artforms():
     st.markdown("<h1 style='text-align:center;'>🎨 Art Forms Exploration</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>✨ Explore various art forms and their ORIGINs. Use the filters to discover hidden gems! ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-    conn = snowflake.connector.connect(
-    user=st.secrets["snowflake"]["user"],
-    password=st.secrets["snowflake"]["password"],
-    account=st.secrets["snowflake"]["account"],
-    warehouse=st.secrets["snowflake"]["warehouse"],
-    database=st.secrets["snowflake"]["database"],
-    schema=st.secrets["snowflake"]["schema"]
-)
-
-    query = "SELECT * FROM ARTIST"
-    data = pd.read_sql(query, conn)
+    @st.cache_data
+    def load_data():
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        query = "SELECT * FROM ARTIST"
+        data = pd.read_sql(query, conn)
+        conn.close()
+        return data
+    data = load_data()
     # Sidebar Filters
     st.sidebar.header("🔎 Filter Artworks")
     art_form = st.sidebar.multiselect("🖼️ Art Form", options=data['TITLE'].unique(), default=data['TITLE'].unique())
