@@ -100,7 +100,7 @@ def show_storyteller():
     st.markdown('<div class="sub-text">Choose your preferences and let AI narrate your dream cultural journey through India! 🌏✨</div>', unsafe_allow_html=True)
 
     # Load Lottie animation
-    lottie_culture = load_lottie_url("https://lottie.host/732c78b1-2d80-4080-bc7f-2de6c79c8cf5/IZJwAEnTfN.json")
+    lottie_culture = load_lottie_url("https://lottie.host/acf4a3e9-210d-4f5f-ad7b-608c10b058fb/esBW8pQrHR.json")
     st_lottie(lottie_culture, height=250, speed=1)
 
     # Filters
