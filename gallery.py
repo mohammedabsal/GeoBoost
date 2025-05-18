@@ -52,7 +52,7 @@ def show_gallery():
             "description": "Ramadan is the ninth and holiest month in the Islamic calendar, observed by Muslims through fasting from dawn to sunset, prayer, reflection, and charity. Fasting, or *sawm*, fosters self-discipline and empathy for the less fortunate. The month ends with Eid al-Fitr, a celebration of breaking the fast with prayers, feasts, and family gatherings",
             "things_to_do": "",
             "date": "March 31st(Monday),2025",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/ramadan.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/ramadan_1.jpg"
         },
         {
             "name": "Christmas",
@@ -73,7 +73,7 @@ def show_gallery():
             "description": "Janmashtami, a significant Hindu festival, marks the birth of Lord Krishna. Celebrated with fasting, temple visits, and midnight prayers, the festivities are especially grand in Mathura and Vrindavan. Children dress as Krishna, and temples showcase \"jhankis\" depicting his life. This festival occurs on the 8th day of Krishna Paksha in Bhadrapada, usually in August or September.",
             "things_to_do": "",
             "date": "25th December,2024",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/krishna.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/krishna_1.jpg"
         },
         {
             "name": "Bakrid",
