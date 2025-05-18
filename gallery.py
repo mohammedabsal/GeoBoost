@@ -24,7 +24,7 @@ def show_gallery():
             "description": "Diwali, one of the most prominent Hindu festivals of India, is celebrated with a lot of pomp and show. During this festival of lights, houses are decorated with clay lamps, candles, and Ashok leaves. People wear new clothes, participate in family puja, burst crackers, and share sweets with friends, families, and neighbours. It is the most popular festival in India",
             "things_to_do": "Light diyas, decorate your home, share sweets and gifts with family and loved ones",
             "date": "October 31(Thursday)",
-            "image": "https://cdn.jsdelivr.net/gh/mohammedabsal/GeoBoost@main/img/diw.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/diw.jpg"
         },
         {
             "name": "Holi-The Vibrant Festival Of Colours",
