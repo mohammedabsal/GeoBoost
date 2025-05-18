@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import snowflake.connector
 import requests
 import time
 import os
@@ -11,19 +12,28 @@ def show_storyteller():
     # ============ Load Cultural Snippets ============
     @st.cache_data
     def load_snippets():
-        return pd.read_csv("data/snippets.csv")
+        conn= snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        query = "SELECT * FROM SNIPPETS"
+        return pd.read_sql(query, conn)
 
     # ============ Cohere Story Generation ============
     def generate_story(regions, interests):
         df = load_snippets()
-        filtered = df[df['Region'].isin(regions) & df['Category'].isin(interests)]
+        filtered = df[df['REGION'].isin(regions) & df['CATEGORY'].isin(interests)]
 
         if filtered.empty:
             return "No data available for the selected filters."
 
         context = ""
         for _, row in filtered.iterrows():
-            context += f"{row['Title']} - {row['Description']}\n\n"
+            context += f"{row['TITLE']} - {row['DESCRIPTION']}\n\n"
 
         region_str = ', '.join(regions)
         interest_str = ', '.join(interests)
@@ -32,7 +42,7 @@ def show_storyteller():
     You are an expert cultural travel storyteller.
 
     Your task is to write a rich, engaging travel story based on the following cultural context
-    for each region and interest selected by the user. For each one give at most 4 lines of description:
+    for each region and interest selected by the user. For each one give at most 3 lines of description:
 
     {context}
 
@@ -121,7 +131,7 @@ def show_storyteller():
     st.markdown("Choose your preferences and let our AI generate and narrate a cultural travel story using a talking avatar.")
 
     data = load_snippets()
-    regions = st.multiselect("Select Region(s)", options=sorted(data['Region'].unique()))
+    regions = st.multiselect("Select Region(s)", options=sorted(data['REGION'].unique()))
     interests = st.multiselect("Choose Interests", ["Dance", "Food", "Art"])
 
     if st.button("✨ Generate Animated Story"):

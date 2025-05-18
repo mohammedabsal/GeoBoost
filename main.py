@@ -102,59 +102,162 @@ st.markdown(
 )
 
 if page == "🏠 Home":
-    # Banner image (replace with your own if desired)
-    st.image("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80", use_container_width=True)
+    # Background banner with fade-in effect
+    st.markdown("""
+        <style>
+            .fade-in {
+                animation: fadeIn 2s ease-in-out;
+            }
+            @keyframes fadeIn {
+                0% {opacity: 0;}
+                100% {opacity: 1;}
+            }
+            .feature-box:hover {
+                transform: scale(1.05);
+                transition: transform 0.3s ease-in-out;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            }
+            .footer {
+                margin-top: 50px;
+                padding: 20px 0;
+                text-align: center;
+                color: #888;
+                font-size: 14px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
     st.markdown(
-        "<h1 style='text-align:center; color:#2E86C1;'>🌏 Welcome to GeoBoost Cultural Explorer!</h1>",
+"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay-text {
+    font-family: 'Great Vibes', cursive;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 48px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: .15em solid white;
+    animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 66% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: white }
+}
+</style>
+
+<div class="video-container">
+    <video autoplay loop muted playsinline>
+        <source src="https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/video_1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="overlay-text">GeoBoost Cultural Explorer</div>
+</div>
+""",
+unsafe_allow_html=True
+)
+
+    # Title with fade-in effect
+    
+    st.markdown("<h1 class='fade-in' style='text-align:center; color:#2E86C1;'>Welcome to GeoBoost Cultural Explorer!</h1>", unsafe_allow_html=True)
+    
+    st.markdown(
+        "<p class='fade-in' style='text-align:center; font-size:20px;'>Discover India's tourism trends, vibrant art forms, and cultural richness.<br>Navigate through our features to explore, learn, and get inspired!</p>",
         unsafe_allow_html=True
     )
-    st.markdown(
-        "<p style='text-align:center; font-size:20px;'>Discover India's tourism trends, vibrant art forms, and cultural richness.<br>Navigate through our features to explore, learn, and get inspired!</p>",
-        unsafe_allow_html=True
-    )
+
+    st.markdown("----")
+
+    # Features section with slight animations
+    features = [
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+            "title": "📊 Tourism Dashboard",
+            "desc": "Get insights into India's tourism trends with interactive charts and real-time data."
+        },
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            "title": "🗺️ Interactive Map",
+            "desc": "Discover destinations and cultural hotspots with a visual experience."
+        },
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/1823/1823493.png",
+            "title": "🖼️ Art Gallery",
+            "desc": "Browse a handpicked gallery of traditional and modern Indian art."
+        },
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/3469/3469100.png",
+            "title": "🎨 Art Forms",
+            "desc": "Explore the origins and evolution of iconic Indian art forms."
+        },
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png",
+            "title": "🌱 Responsible Tourism",
+            "desc": "Learn travel ethics and how to support sustainability and local communities."
+        },
+        {
+            "img": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+            "title": "📖 AI Storyteller",
+            "desc": "Generate your own personalized cultural journey using AI storytelling."
+        },
+    ]
+
+    for i in range(0, len(features), 3):
+        cols = st.columns(3)
+        for j in range(3):
+            if i + j < len(features):
+                with cols[j]:
+                    st.markdown(f"""
+                        <div class="feature-box" style="text-align: center; padding: 20px;">
+                            <img src="{features[i + j]['img']}" width="80" style="margin-bottom: 10px;">
+                            <h4>{features[i + j]['title']}</h4>
+                            <p style="font-size: 16px; color: #555;">{features[i + j]['desc']}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+
     st.markdown("---")
 
-    # Features grid
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.image("https://cdn-icons-png.flaticon.com/512/854/854878.png", width=80)
-        st.markdown("### 📊 Tourism Dashboard")
-        st.markdown("Get insights into India's tourism trends with interactive charts and data.")
-
-    with col2:
-        st.image("https://cdn-icons-png.flaticon.com/512/684/684908.png", width=80)
-        st.markdown("### 🗺️ Interactive Map")
-        st.markdown("Explore destinations and cultural hotspots on an interactive map.")
-
-    with col3:
-        st.image("https://cdn-icons-png.flaticon.com/512/1823/1823493.png", width=80)
-        st.markdown("### 🖼️ Art Gallery")
-        st.markdown("Browse a curated gallery of traditional and modern Indian art forms.")
-
-    st.markdown("---")
-    col4, col5, col6 = st.columns(3)
-    with col4:
-        st.image("https://cdn-icons-png.flaticon.com/512/3469/3469100.png", width=80)
-        st.markdown("### 🎨 Art Forms")
-        st.markdown("Dive deep into the origins and stories behind various Indian art forms.")
-
-    with col5:
-        st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=80)
-        st.markdown("### 🌱 Responsible Tourism Tips")
-        st.markdown("Learn how to travel responsibly and support local communities.")
-
-    with col6:
-        st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=80)
-        st.markdown("### 📖 AI Storyteller")
-        st.markdown("Generate personalized cultural stories powered by AI.")
-
-    st.markdown("---")
+    # Call-to-action
     st.markdown(
         "<div style='text-align:center; font-size:18px; color:#117A65;'>"
-        "✨ Start exploring using the navigation menu on the left! ✨"
+        "✨ Use the sidebar to start your cultural adventure now! ✨"
         "</div>",
         unsafe_allow_html=True
     )
+
+    # Footer
+    st.markdown("""
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)
+
 
 elif page == "Tourism Dashboard":
     show_dashboard()

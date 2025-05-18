@@ -1,25 +1,36 @@
 import streamlit as st
+import snowflake.connector
 import pandas as pd
 
 def show_artforms():
     st.markdown("<h1 style='text-align:center;'>🎨 Art Forms Exploration</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; font-size:18px;'>✨ Explore various art forms and their origins. Use the filters to discover hidden gems! ✨</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:18px;'>✨ Explore various art forms and their ORIGINs. Use the filters to discover hidden gems! ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
+    conn = snowflake.connector.connect(
+    user=st.secrets["snowflake"]["user"],
+    password=st.secrets["snowflake"]["password"],
+    account=st.secrets["snowflake"]["account"],
+    warehouse=st.secrets["snowflake"]["warehouse"],
+    database=st.secrets["snowflake"]["database"],
+    schema=st.secrets["snowflake"]["schema"]
+)
 
-    data = pd.read_csv('data/artist.csv')
+    query = "SELECT * FROM ARTIST"
+    data = pd.read_sql(query, conn)
+    # data = pd.read_csv('data/ARTIST.csv')
 
     # Sidebar Filters
     st.sidebar.header("🔎 Filter Artworks")
-    art_form = st.sidebar.multiselect("🖼️ Art Form", options=data['title'].unique(), default=data['title'].unique())
-    region = st.sidebar.multiselect("🗺️ Region", options=data['origin'].unique(), default=data['origin'].unique())
-    artist = st.sidebar.multiselect("👩‍🎨 Artist", options=data['artist'].unique(), default=data['artist'].unique())
+    art_form = st.sidebar.multiselect("🖼️ Art Form", options=data['TITLE'].unique(), default=data['TITLE'].unique())
+    region = st.sidebar.multiselect("🗺️ Region", options=data['ORIGIN'].unique(), default=data['ORIGIN'].unique())
+    artist = st.sidebar.multiselect("👩‍🎨 ARTIST", options=data['ARTIST'].unique(), default=data['ARTIST'].unique())
     search_query = st.text_input("🔍 Search Artworks", "")
 
     # Filter Data
     filtered_data = data[
-        (data['title'].isin(art_form)) &
-        (data['origin'].isin(region)) &
-        (data['artist'].isin(artist)) &
+        (data['TITLE'].isin(art_form)) &
+        (data['ORIGIN'].isin(region)) &
+        (data['ARTIST'].isin(artist)) &
         (data.apply(lambda row: search_query.lower() in row.to_string().lower(), axis=1) if search_query else True)
     ]
 
@@ -31,14 +42,14 @@ def show_artforms():
             with st.container():
                 cols = st.columns([1, 2])
                 with cols[0]:
-                    st.image(row['image_url'], caption=row['title'], use_container_width=True)
+                    st.image(row['IMAGE_URL'], caption=row['TITLE'], use_container_width=True)
                 with cols[1]:
-                    st.markdown(f"**🎨 Art Form:** {row['title']}")
-                    st.markdown(f"**👩‍🎨 Artist:** {row['artist']}")
-                    st.markdown(f"**🗺️ Region:** {row['origin']}")
-                    st.markdown(f"**📝 Description:** {row['description']}")
-                    if st.button(f"▶️ Watch Video: {row['title']}", key=f"video_{index}"):
-                        st.video(row['video_url'])
+                    st.markdown(f"**🎨 Art Form:** {row['TITLE']}")
+                    st.markdown(f"**👩‍🎨 ARTIST:** {row['ARTIST']}")
+                    st.markdown(f"**🗺️ Region:** {row['ORIGIN']}")
+                    st.markdown(f"**📝 DESCRIPTION:** {row['DESCRIPTION']}")
+                    if st.button(f"▶️ Watch Video: {row['TITLE']}", key=f"video_{index}"):
+                        st.video(row['VIDEO_URL'])
                 st.markdown("---")
 
     # Responsive Design

@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_lottie import st_lottie
 import requests
-
+import snowflake.connector
 def show_visit():
     # Load Lottie animations
     @st.cache_data
@@ -63,23 +63,26 @@ def show_visit():
     """, unsafe_allow_html=True)
 
     # Load data
-    try:
-        data = pd.read_csv('data/timetovisit.csv')
-    except FileNotFoundError:
-        st.error("⚠️ The dataset 'timetovisit.csv' was not found. Please ensure the correct file path.")
-        st.stop()
-
+    conn = snowflake.connector.connect(
+        user=st.secrets["snowflake"]["user"],
+        password=st.secrets["snowflake"]["password"],
+        account=st.secrets["snowflake"]["account"],
+        warehouse=st.secrets["snowflake"]["warehouse"],
+        database=st.secrets["snowflake"]["database"],
+        schema=st.secrets["snowflake"]["schema"]
+    )
+    query = "SELECT * FROM TIMETOVISIT"
+    data = pd.read_sql(query, conn)
     # Sidebar
-    with st.sidebar:
-        if travel_animation:
-            st_lottie(travel_animation, height=180, key="travel_animation")
+    if travel_animation:
+        st_lottie(travel_animation, height=180, key="travel_animation")
         st.header("🌍 Explore India Mindfully")
         st.markdown("Select a state or city below:")
 
-    states = data['state_city'].unique()
+    states = data['STATE_CITY'].unique()
     selected_state = st.selectbox("📍 Choose your destination", states)
 
-    info = data[data['state_city'] == selected_state].iloc[0]
+    info = data[data['STATE_CITY'] == selected_state].iloc[0]
 
     # Main Content Sections
     st.markdown(f"<div class='visit-card'><div class='visit-section-title'>📍 Destination: <span style='color:#117A65;'>{selected_state}</span></div>", unsafe_allow_html=True)
@@ -92,7 +95,7 @@ def show_visit():
     with col2:
         st.markdown(f"""
             <div class='visit-section-title'>🗓️ Best Time to Visit</div>
-            <div class='visit-section-content'>{info['best_time_to_visit']}</div>
+            <div class='visit-section-content'>{info['BEST_TIME_TO_VISIT']}</div>
         """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -102,7 +105,7 @@ def show_visit():
     with col3:
         st.markdown(f"""
             <div class='visit-section-title'>🧺 How to Support Locals</div>
-            <div class='visit-section-content'>{info['support_locals']}</div>
+            <div class='visit-section-content'>{info['SUPPORT_LOCALS']}</div>
         """, unsafe_allow_html=True)
     with col4:
         if support_locals_animation:
@@ -113,9 +116,9 @@ def show_visit():
     st.markdown("<div class='visit-card'>", unsafe_allow_html=True)
     st.markdown(f"""
         <div class='visit-section-title'>🙏 Cultural Etiquette</div>
-        <div class='visit-section-content'>{info['cultural_etiquette']}</div>
+        <div class='visit-section-content'>{info['CULTURAL_ETIQUETTE']}</div>
         <div class='visit-section-title' style='margin-top:1em;'>🌱 Eco-Friendly Tips</div>
-        <div class='visit-section-content'>{info['eco_friendly']}</div>
+        <div class='visit-section-content'>{info['ECO_FRIENDLY']}</div>
     """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
