@@ -72,7 +72,6 @@ def show_storyteller():
         return response.generations[0].text.strip()
 
     # ============ UI Layout ============
-    st.set_page_config(page_title="Cultural Storyteller", page_icon="🎭", layout="wide")
     st.markdown("""
         <style>
             .title-text {
