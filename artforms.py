@@ -75,4 +75,3 @@ def show_artforms():
             }
         </style>
     """, unsafe_allow_html=True)
-show_artforms()
