@@ -42,7 +42,7 @@ def show_artforms():
                 with cols[0]:
                     img_url = row['IMAGE_URL']
                     if isinstance(img_url, str) and img_url.strip().startswith('http'):
-                        st.image(img_url, caption=row['TITLE'], use_container_width=True)
+                        st.image(img_url, caption=row['TITLE'])
                     else:
                         st.warning("No image available.")
                 with cols[1]:
