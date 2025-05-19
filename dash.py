@@ -1,7 +1,11 @@
 import pandas as pd
 import streamlit as st
-import snowflake.connector
 import plotly.express as px
+from sqlalchemy import create_engine
+# Build the SQLAlchemy connection string
+engine = create_engine(
+    f'snowflake://{st.secrets["snowflake"]["user"]}:{st.secrets["snowflake"]["password"]}@{st.secrets["snowflake"]["account"]}/{st.secrets["snowflake"]["database"]}/{st.secrets["snowflake"]["schema"]}?warehouse={st.secrets["snowflake"]["warehouse"]}'
+)
 def show_dashboard():
     st.markdown("""
         <style>
@@ -18,81 +22,27 @@ def show_dashboard():
     st.markdown("---")
     @st.cache_data
     def load_inbound_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
-        conn.close()
+        df = pd.read_sql("SELECT * FROM INBOUNDTOURISM", engine)
         return df
     @st.cache_data
     def load_country_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
-        conn.close()
+        df_country = pd.read_sql("SELECT * FROM COUNTRY", engine)
         return df_country
     @st.cache_data
     def load_revenue_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_revenue = pd.read_sql("SELECT * FROM REVENUE", conn)
-        conn.close()
+        df_revenue = pd.read_sql("SELECT * FROM REVENUE", engine)
         return df_revenue
     @st.cache_data
     def load_art_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_art = pd.read_sql("SELECT * FROM ART", conn)
-        conn.close()
+        df_art = pd.read_sql("SELECT * FROM ART", engine)
         return df_art
     @st.cache_data
     def load_fest_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_fest = pd.read_sql("SELECT * FROM FESTIVAL", conn)
-        conn.close()
+        df_fest = pd.read_sql("SELECT * FROM FESTIVAL", engine)
         return df_fest
     @st.cache_data
     def load_food_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_food = pd.read_sql("SELECT * FROM FOOD", conn)
-        conn.close()
+        df_food = pd.read_sql("SELECT * FROM FOOD", engine)
         return df_food
     df = load_inbound_data()
     df_country = load_country_data()
@@ -100,6 +50,12 @@ def show_dashboard():
     df_art = load_art_data()
     df_fest = load_fest_data()
     df_food = load_food_data()
+    df.columns = df.columns.str.upper()
+    df_country.columns = df_country.columns.str.upper()
+    df_revenue.columns = df_revenue.columns.str.upper()
+    df_art.columns = df_art.columns.str.upper()
+    df_fest.columns = df_fest.columns.str.upper()
+    df_food.columns = df_food.columns.str.upper()
     # Load data
     st.markdown("<div class='section-header'>📊 Data Loading...</div>", unsafe_allow_html=True)
     df = df.fillna(0)
@@ -191,7 +147,7 @@ def show_dashboard():
                     x="YEAR",
                     y="NRIS_ARRIVALS_MILLION",
                     title="🧳 Non-Resident Indian Arrivals (NRIs) Over the Years",
-                    labels={"nris_arrivals_million": "NRIs (in Millions)", "YEAR": "YEAR"},
+                    labels={"NRIS_ARRIVALS_MILLION": "NRIs (in Millions)", "YEAR": "YEAR"},
                     markers=True,
                     color_discrete_sequence=["#F39C12"]
                 )
@@ -226,7 +182,7 @@ def show_dashboard():
                 x="MONTH",
                 y="FEE_FROM_TOURISM",
                 title=f"📅 Tourism Revenue by Month in {selected_year}",
-                labels={"MONTH": "MONTH", "fee from tourism (in ₹ crore)": "Revenue (₹ crore)"},
+                labels={"MONTH": "MONTH", "FEE_FROM_TOURISM)": "Revenue (₹ crore)"},
                 color="month",
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
