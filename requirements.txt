@@ -5,6 +5,8 @@ pandas
 numpy
 plotly
 folium
+sqlalchemy
+snowflake-sqlalchemy
 streamlit-folium
 streamlit-lottie
 snowflake-connector-python
