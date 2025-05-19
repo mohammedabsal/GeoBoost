@@ -11,7 +11,6 @@ def load_lottie_url(url: str):
     if r.status_code != 200:
         return None
     return r.json()
-@st.cache_data
 def show_storyteller():
     # ============ API KEYS ============
     co = cohere.Client("1bxiGdTKWg09SX91C9Cl62yzVOGqgyxWfZXBBayA")

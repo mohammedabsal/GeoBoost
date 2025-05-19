@@ -3,7 +3,6 @@ import pandas as pd
 from streamlit_lottie import st_lottie
 import requests
 import snowflake.connector
-@st.cache_data
 def show_visit():
     # Load Lottie animations
     @st.cache_data
