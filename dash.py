@@ -2,11 +2,10 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from sqlalchemy import create_engine
-# Build the SQLAlchemy connection string
-engine = create_engine(
+def show_dashboard():
+    engine = create_engine(
     f'snowflake://{st.secrets["snowflake"]["user"]}:{st.secrets["snowflake"]["password"]}@{st.secrets["snowflake"]["account"]}/{st.secrets["snowflake"]["database"]}/{st.secrets["snowflake"]["schema"]}?warehouse={st.secrets["snowflake"]["warehouse"]}'
 )
-def show_dashboard():
     st.markdown("""
         <style>
             .main-title {text-align:center; font-size:2.5em; font-weight:bold; color:#2E86C1;}
@@ -182,7 +181,7 @@ def show_dashboard():
                 x="MONTH",
                 y="FEE_FROM_TOURISM",
                 title=f"📅 Tourism Revenue by Month in {selected_year}",
-                labels={"MONTH": "MONTH", "FEE_FROM_TOURISM)": "Revenue (₹ crore)"},
+                labels={"MONTH": "MONTH", "FEE_FROM_TOURISM": "Revenue (₹ crore)"},
                 color="month",
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
