@@ -16,49 +16,92 @@ def show_dashboard():
     st.markdown("<div class='main-title'>🌏 GeoBoost Tourism & Culture Dashboard</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>Explore India's tourism trends, cultural richness, and vibrant art forms. Use the sidebar to navigate and filter data. ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-    conn = snowflake.connector.connect(
-        user=st.secrets["snowflake"]["user"],
-        password=st.secrets["snowflake"]["password"],
-        account=st.secrets["snowflake"]["account"],
-        warehouse=st.secrets["snowflake"]["warehouse"],
-        database=st.secrets["snowflake"]["database"],
-        schema=st.secrets["snowflake"]["schema"]
-    )
     @st.cache_data
     def load_inbound_data():
-        query = "SELECT * FROM INBOUNDTOURISM"
-        df = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
+        conn.close()
         return df
     @st.cache_data
     def load_country_data():
-        query = "SELECT * FROM COUNTRY"
-        df_country = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
+        conn.close()
         return df_country
     @st.cache_data
     def load_revenue_data():
-        query = "SELECT * FROM REVENUE"
-        df_revenue = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df_revenue = pd.read_sql("SELECT * FROM REVENUE", conn)
+        conn.close()
         return df_revenue
     @st.cache_data
     def load_art_data():
-        query = "SELECT * FROM ART"
-        df_art = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df_art = pd.read_sql("SELECT * FROM ART", conn)
+        conn.close()
         return df_art
     @st.cache_data
     def load_fest_data():
-        query = "SELECT * FROM FESTIVAL"
-        df_fest = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df_fest = pd.read_sql("SELECT * FROM FESTIVAL", conn)
+        conn.close()
         return df_fest
     @st.cache_data
     def load_food_data():
-        query = "SELECT * FROM FOOD"
-        df_food = pd.read_sql(query, conn)
+        conn = snowflake.connector.connect(
+            user=st.secrets["snowflake"]["user"],
+            password=st.secrets["snowflake"]["password"],
+            account=st.secrets["snowflake"]["account"],
+            warehouse=st.secrets["snowflake"]["warehouse"],
+            database=st.secrets["snowflake"]["database"],
+            schema=st.secrets["snowflake"]["schema"]
+        )
+        df_food = pd.read_sql("SELECT * FROM FOOD", conn)
+        conn.close()
         return df_food
-    # Convert all columns to lowercase for consistency
-
-    for d in [load_inbound_data(),load_country_data(),load_revenue_data(), load_art_data(),load_fest_data() ,load_food_data()]:
-        d.columns = d.columns.str.lower()
-    # Clean the datasets (handle missing values)
+    df = load_inbound_data()
+    df_country = load_country_data()
+    df_revenue = load_revenue_data()
+    df_art = load_art_data()
+    df_fest = load_fest_data()
+    df_food = load_food_data()
+    # Load data
+    st.markdown("<div class='section-header'>📊 Data Loading...</div>", unsafe_allow_html=True)
     df = df.fillna(0)
     df_country = df_country.fillna(0)
     df_revenue = df_revenue.fillna(0)
@@ -81,12 +124,12 @@ def show_dashboard():
         st.sidebar.header("🎚️ Filter Options")
         year_range = st.sidebar.slider(
             "Select Year Range (Inbound Tourism)",
-            min_value=int(df["year"].min()),
-            max_value=int(df["year"].max()),
-            value=(int(df["year"].min()), int(df["year"].max()))
+            min_value=int(df["YEAR"].min()),
+            max_value=int(df["YEAR"].max()),
+            value=(int(df["YEAR"].min()), int(df["YEAR"].max()))
         )
 
-        filtered_df = df[(df["year"] >= year_range[0]) & (df["year"] <= year_range[1])]
+        filtered_df = df[(df["YEAR"] >= year_range[0]) & (df["YEAR"] <= year_range[1])]
         tourism_type = st.sidebar.multiselect(
             "Select Tourism Types to Display",
             options=["FTAs", "NRIs", "International Tourist Arrivals"],
@@ -99,18 +142,18 @@ def show_dashboard():
             index=0
         )
 
-        year_column = f"numberofarrivals{year_country}"
-        filtered_country_df = df_country[["country", year_column]].copy()
+        year_column = f"NUMBEROFARRIVALS{year_country}"
+        filtered_country_df = df_country[["COUNTRY", year_column]].copy()
         filtered_country_df[year_column] = pd.to_numeric(filtered_country_df[year_column], errors="coerce")
         filtered_country_df = filtered_country_df[filtered_country_df[year_column] > 0]
 
         countries = st.sidebar.multiselect(
             "Select Countries",
-            options=filtered_country_df["country"].unique(),
-            default=filtered_country_df["country"].unique()
+            options=filtered_country_df["COUNTRY"].unique(),
+            default=filtered_country_df["COUNTRY"].unique()
         )
 
-        filtered_country_df = filtered_country_df[filtered_country_df["country"].isin(countries)]
+        filtered_country_df = filtered_country_df[filtered_country_df["COUNTRY"].isin(countries)]
 
         selected_year = st.sidebar.selectbox(
             "Select Year (Revenue)",
@@ -120,11 +163,11 @@ def show_dashboard():
 
         selected_months = st.sidebar.multiselect(
             "Select Months (Revenue)",
-            options=df_revenue["month"].unique(),
-            default=df_revenue["month"].unique()
+            options=df_revenue["MONTH"].unique(),
+            default=df_revenue["MONTH"].unique()
         )
 
-        filtered_revenue_df = df_revenue[df_revenue["month"].isin(selected_months)]
+        filtered_revenue_df = df_revenue[df_revenue["MONTH"].isin(selected_months)]
 
         # Animations: Use Streamlit's built-in spinner for smooth transitions
         with st.spinner("Loading tourism insights..."):
@@ -132,10 +175,10 @@ def show_dashboard():
             if "FTAs" in tourism_type:
                 fig_ftas = px.line(
                     filtered_df,
-                    x="year",
-                    y="ftas_in_india_million",
+                    x="YEAR",
+                    y="FTAS_IN_INDIA_MILLION",
                     title="🌐 Foreign Tourist Arrivals (FTAs) Over the Years",
-                    labels={"ftas_in_india_million": "FTAs (in Millions)", "year": "Year"},
+                    labels={"FTAS_IN_INDIA_MILLION": "FTAs (in Millions)", "YEAR": "YEAR"},
                     markers=True,
                     color_discrete_sequence=["#1ABC9C"]
                 )
@@ -145,10 +188,10 @@ def show_dashboard():
             if "NRIs" in tourism_type:
                 fig_nris = px.line(
                     filtered_df,
-                    x="year",
-                    y="nris_arrivals_million",
+                    x="YEAR",
+                    y="NRIS_ARRIVALS_MILLION",
                     title="🧳 Non-Resident Indian Arrivals (NRIs) Over the Years",
-                    labels={"nris_arrivals_million": "NRIs (in Millions)", "year": "Year"},
+                    labels={"nris_arrivals_million": "NRIs (in Millions)", "YEAR": "YEAR"},
                     markers=True,
                     color_discrete_sequence=["#F39C12"]
                 )
@@ -158,10 +201,10 @@ def show_dashboard():
             if "International Tourist Arrivals" in tourism_type:
                 fig_itas = px.line(
                     filtered_df,
-                    x="year",
-                    y="international_tourist_arrivals_million",
+                    x="YEAR",
+                    y="INTERNATIONAL_TOURIST_ARRIVALS_MILLION",
                     title="✈️ International Tourist Arrivals Over the Years",
-                    labels={"international_tourist_arrivals_million": "ITAs (in Millions)", "year": "Year"},
+                    labels={"international_tourist_arrivals_million": "ITAs (in Millions)", "YEAR": "YEAR"},
                     markers=True,
                     color_discrete_sequence=["#8E44AD"]
                 )
@@ -169,7 +212,7 @@ def show_dashboard():
 
             fig_pie = px.pie(
                 filtered_country_df,
-                names="country",
+                names="COUNTRY",
                 values=year_column,
                 title=f"🌍 Tourist Arrivals by Country in {year_country}",
                 color_discrete_sequence=px.colors.qualitative.Set3,
@@ -180,10 +223,10 @@ def show_dashboard():
             st.markdown("<div class='section-header'>💰 Tourism Revenue</div>", unsafe_allow_html=True)
             bar_chart = px.bar(
                 filtered_revenue_df,
-                x="month",
-                y="fee_from_tourism",
+                x="MONTH",
+                y="FEE_FROM_TOURISM",
                 title=f"📅 Tourism Revenue by Month in {selected_year}",
-                labels={"month": "Month", "fee from tourism (in ₹ crore)": "Revenue (₹ crore)"},
+                labels={"MONTH": "MONTH", "fee from tourism (in ₹ crore)": "Revenue (₹ crore)"},
                 color="month",
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
@@ -191,10 +234,10 @@ def show_dashboard():
 
             line_chart = px.line(
                 filtered_revenue_df,
-                x="month",
-                y=f"percentage_change_{selected_year}",
+                x="MONTH",
+                y=f"PERCENTAGE_CHANGE_{selected_year}",
                 title=f"📈 Percentage Change in Revenue for {selected_year}",
-                labels={"month": "Month", f"percentage change {selected_year}#2": "Percentage Change (%)"},
+                labels={"MONTH": "MONTH", f"PERCENTAGE_CHANGE_{selected_year}": "Percentage Change (%)"},
                 markers=True,
                 color_discrete_sequence=["#E74C3C"]
             )
@@ -216,11 +259,11 @@ def show_dashboard():
 
         st.markdown("<div class='section-header'>🎉 Top 10 Festivals in India</div>", unsafe_allow_html=True)
         st.markdown("Celebrate the vibrant festivals across India. Below is a table showcasing the top 10 festivals from various states. 🪔")
-        st.table(load_fest_data())
+        st.table(df_fest)
 
         st.markdown("<div class='section-header'>🍽️ Top 10 Foods in India</div>", unsafe_allow_html=True)
         st.markdown("Discover the variety of traditional Indian cuisine. Below is a table showcasing the top 10 foods from different states. 🍛")
-        st.table(load_food_data())
+        st.table(df_food)
 
     # --- ART PAGE ---
     elif page == "🖼️ Art":
