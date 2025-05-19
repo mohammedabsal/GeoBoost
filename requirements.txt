@@ -4,9 +4,7 @@ matplotlib==3.8.4
 pandas
 numpy
 plotly
-folium
-sqlalchemy
-snowflake-sqlalchemy
+foliu
 streamlit-folium
 streamlit-lottie
 snowflake-connector-python
