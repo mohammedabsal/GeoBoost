@@ -65,7 +65,7 @@ def show_dashboard():
             database=st.secrets["snowflake"]["database"],
             schema=st.secrets["snowflake"]["schema"]
         )
-        df_art = pd.read_sql("SELECT * FROM ART", conn)
+        df_art = pd.read_sql("SELECT * FROM ARTIST", conn)
         conn.close()
         return df_art
     @st.cache_data
