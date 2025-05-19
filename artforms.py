@@ -1,7 +1,7 @@
 import streamlit as st
 import snowflake.connector
 import pandas as pd
-
+@st.cache_data
 def show_artforms():
     st.markdown("<h1 style='text-align:center;'>🎨 Art Forms Exploration</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>✨ Explore various art forms and their ORIGINs. Use the filters to discover hidden gems! ✨</p>", unsafe_allow_html=True)

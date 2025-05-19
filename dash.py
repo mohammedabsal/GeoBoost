@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import snowflake.connector
 import plotly.express as px
-
+@st.cache_data
 def show_dashboard():
     st.markdown("""
         <style>

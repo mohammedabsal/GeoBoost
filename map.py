@@ -5,6 +5,7 @@ import folium
 from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 import streamlit as st
+@st.cache_data
 def show_map():
     st.title("🗺️ Cultural Map")
     st.markdown("""

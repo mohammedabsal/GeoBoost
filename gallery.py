@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+@st.cache_data
 def show_gallery():
     st.markdown("""
     <style>
