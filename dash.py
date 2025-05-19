@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 import snowflake.connector
 import plotly.express as px
-@st.cache_data
 def show_dashboard():
     st.markdown("""
         <style>
@@ -25,23 +24,40 @@ def show_dashboard():
         database=st.secrets["snowflake"]["database"],
         schema=st.secrets["snowflake"]["schema"]
     )
-    query_inbound= "SELECT * FROM INBOUNDTOURISM"
-    query_country = "SELECT * FROM COUNTRY"
-    query_revenue = "SELECT * FROM REVENUE"
-    query_art = "SELECT * FROM ARTFORM"
-    query_fest = "SELECT * FROM FESTIVAL"
-    query_food = "SELECT * FROM FOOD"
-    df = pd.read_sql(query_inbound, conn)
-    df_country = pd.read_sql(query_country, conn)
-    df_revenue = pd.read_sql(query_revenue, conn)
-    df_art = pd.read_sql(query_art, conn)
-    df_fest = pd.read_sql(query_fest, conn)
-    df_food = pd.read_sql(query_food, conn)
-
+    @st.cache_data
+    def load_inbound_data():
+        query = "SELECT * FROM INBOUNDTOURISM"
+        df = pd.read_sql(query, conn)
+        return df
+    @st.cache_data
+    def load_country_data():
+        query = "SELECT * FROM COUNTRY"
+        df_country = pd.read_sql(query, conn)
+        return df_country
+    @st.cache_data
+    def load_revenue_data():
+        query = "SELECT * FROM REVENUE"
+        df_revenue = pd.read_sql(query, conn)
+        return df_revenue
+    @st.cache_data
+    def load_art_data():
+        query = "SELECT * FROM ART"
+        df_art = pd.read_sql(query, conn)
+        return df_art
+    @st.cache_data
+    def load_fest_data():
+        query = "SELECT * FROM FESTIVAL"
+        df_fest = pd.read_sql(query, conn)
+        return df_fest
+    @st.cache_data
+    def load_food_data():
+        query = "SELECT * FROM FOOD"
+        df_food = pd.read_sql(query, conn)
+        return df_food
     # Convert all columns to lowercase for consistency
-    for d in [df, df_country, df_revenue, df_art, df_fest, df_food]:
-        d.columns = d.columns.str.lower()
 
+    for d in [load_inbound_data(),load_country_data(),load_revenue_data(), load_art_data(),load_fest_data() ,load_food_data()]:
+        d.columns = d.columns.str.lower()
     # Clean the datasets (handle missing values)
     df = df.fillna(0)
     df_country = df_country.fillna(0)
@@ -200,11 +216,11 @@ def show_dashboard():
 
         st.markdown("<div class='section-header'>🎉 Top 10 Festivals in India</div>", unsafe_allow_html=True)
         st.markdown("Celebrate the vibrant festivals across India. Below is a table showcasing the top 10 festivals from various states. 🪔")
-        st.table(df_fest)
+        st.table(load_fest_data())
 
         st.markdown("<div class='section-header'>🍽️ Top 10 Foods in India</div>", unsafe_allow_html=True)
         st.markdown("Discover the variety of traditional Indian cuisine. Below is a table showcasing the top 10 foods from different states. 🍛")
-        st.table(df_food)
+        st.table(load_food_data())
 
     # --- ART PAGE ---
     elif page == "🖼️ Art":
