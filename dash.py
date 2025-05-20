@@ -195,7 +195,7 @@ def show_dashboard():
                     st.plotly_chart(fig_ftas, use_container_width=True)
 
             if "NRIs" in tourism_type:
-                fig_nris = px.line(
+                fig_nris = px.hist(
                     filtered_df,
                     x="YEAR",
                     y="NRIS_ARRIVALS_MILLION",
