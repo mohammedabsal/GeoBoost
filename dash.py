@@ -24,7 +24,6 @@ def show_dashboard():
     st.markdown("---")
 
     # Connect to Snowflake
-    @st.cache_data
     def get_snowflake_connection():
         return snowflake.connector.connect(
             user=st.secrets["snowflake"]["user"],
@@ -35,12 +34,16 @@ def show_dashboard():
             schema=st.secrets["snowflake"]["schema"]
         )
     conn = get_snowflake_connection()
+    # Load data from Snowflake
+    @st.cache_data(ttl=600)
     def load_revenue_data():
         df_revenue = pd.read_sql("SELECT * FROM REVENUE", conn)
         return df_revenue
+    @st.cache_data(ttl=600)
     def load_country_data():
         df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
         return df_country
+    @st.cache_data(ttl=600)
     def load_inbound_data():
         df_inbound = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
         return df_inbound
