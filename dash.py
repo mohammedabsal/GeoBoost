@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import snowflake.connector
 import plotly.express as px
+import warnings
+
+# Suppress SQLAlchemy warning
+warnings.filterwarnings("ignore", message="pandas only supports SQLAlchemy")
+
 def show_dashboard():
     st.markdown("""
             <style>
@@ -42,7 +47,13 @@ def show_dashboard():
     country_df = load_country_data()
     inbound_df = load_inbound_data()
     inbound_df.columns = [c.strip() for c in inbound_df.columns]
-    inbound_df = inbound_df.apply(pd.to_numeric, errors='ignore')
+    # Fix FutureWarning for pd.to_numeric
+    for col in inbound_df.columns:
+        try:
+            inbound_df[col] = pd.to_numeric(inbound_df[col])
+        except Exception:
+            continue
+
     # Sidebar filters
     st.sidebar.header("🔎 Filter Options")
     metrics = {
@@ -103,7 +114,7 @@ def show_dashboard():
     if selected_metrics:
         bar_data = {
             "Metric": [m for m in selected_metrics],
-            "Value": [float(single_year_df[metrics[m]]) for m in selected_metrics]
+            "Value": [float(single_year_df[metrics[m]].iloc[0]) for m in selected_metrics]
         }
         bar_df = pd.DataFrame(bar_data)
         fig_bar = px.bar(
@@ -157,8 +168,8 @@ def show_dashboard():
     else:
         st.info("Please select at least one percentage change metric.")
 
-    # Sidebar filters
-    st.sidebar.header("🔎 Filter Options")
+    # --- Revenue Section ---
+    st.sidebar.header("🔎 Revenue Filter Options")
     months = st.sidebar.multiselect(
         "Select Months",
         df["MONTH"].unique(),
@@ -177,8 +188,7 @@ def show_dashboard():
     )
 
     # Filtered data
-    filtered_df = df[df["MONTH"].isin(months)]
-
+    filtered_rev_df = df[df["MONTH"].isin(months)]
 
     st.title("💰 India Tourism Revenue Dashboard")
     st.markdown("""
@@ -192,7 +202,7 @@ def show_dashboard():
     with col1:
         st.subheader("Monthly Revenue")
         fig1 = px.bar(
-            filtered_df,
+            filtered_rev_df,
             x="MONTH",
             y="FEE_FROM_TOURISM",
             color="MONTH",
@@ -206,7 +216,7 @@ def show_dashboard():
     with col2:
         st.subheader("Revenue Share by Month")
         fig2 = px.pie(
-            filtered_df,
+            filtered_rev_df,
             names="MONTH",
             values="FEE_FROM_TOURISM",
             color_discrete_sequence=px.colors.qualitative.Pastel,
@@ -218,7 +228,7 @@ def show_dashboard():
     # Percentage Change Chart
     st.subheader(f"Monthly {selected_pct.replace('_', ' ').title()}")
     fig3 = px.line(
-        filtered_df,
+        filtered_rev_df,
         x="MONTH",
         y=selected_pct,
         markers=True,
@@ -230,10 +240,10 @@ def show_dashboard():
 
     # Data Table and Download
     with st.expander("📋 Show Data Table"):
-        st.dataframe(filtered_df)
+        st.dataframe(filtered_rev_df)
         st.download_button(
             "Download Filtered Data",
-            filtered_df.to_csv(index=False),
+            filtered_rev_df.to_csv(index=False),
             "revenue_filtered.csv"
         )
 
@@ -252,7 +262,7 @@ def show_dashboard():
 
     # Sort and plot with Plotly
     tourists_sorted = country_df.sort_values(by=arrivals_col, ascending=False)
-    fig3 = px.bar(
+    fig4 = px.bar(
         tourists_sorted,
         x=arrivals_col,
         y='COUNTRY',
@@ -262,5 +272,5 @@ def show_dashboard():
         labels={arrivals_col: "Tourists", "COUNTRY": "Country"},
         title=f"Number of Tourists by Country ({year})"
     )
-    fig3.update_layout(yaxis={'categoryorder':'total ascending'}, title=None)
-    st.plotly_chart(fig3, use_container_width=True)
+    fig4.update_layout(yaxis={'categoryorder':'total ascending'}, title=None)
+    st.plotly_chart(fig4, use_container_width=True)
