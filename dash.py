@@ -187,7 +187,6 @@ def show_dashboard():
                     x="YEAR",
                     y="FTAS_IN_INDIA_MILLION",
                     labels={"FTAS_IN_INDIA_MILLION": "FTAs (in Millions)", "YEAR": "YEAR"},
-                    markers=True,
                     color_discrete_sequence=["#1ABC9C"]
                 )
                 fig_ftas.update_layout(title=None, showlegend=False)
@@ -200,7 +199,6 @@ def show_dashboard():
                     x="YEAR",
                     y="NRIS_ARRIVALS_MILLION",
                     labels={"NRIS_ARRIVALS_MILLION": "NRIs (in Millions)", "YEAR": "YEAR"},
-                    markers=True,
                     color_discrete_sequence=["#F39C12"]
                 )
                 fig_nris.update_layout(title=None, showlegend=False)
