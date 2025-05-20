@@ -182,7 +182,7 @@ def show_dashboard():
         with st.spinner("Loading tourism insights..."):
             col1, col2 = st.columns(2)
             if "FTAs" in tourism_type:
-                fig_ftas = px.line(
+                fig_ftas = px.histogram(
                     filtered_df,
                     x="YEAR",
                     y="FTAS_IN_INDIA_MILLION",
@@ -195,7 +195,7 @@ def show_dashboard():
                     st.plotly_chart(fig_ftas, use_container_width=True)
 
             if "NRIs" in tourism_type:
-                fig_nris = px.hist(
+                fig_nris = px.histogram(
                     filtered_df,
                     x="YEAR",
                     y="NRIS_ARRIVALS_MILLION",
