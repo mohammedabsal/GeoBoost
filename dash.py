@@ -1,27 +1,25 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import snowflake.connector
 import plotly.express as px
-
 def show_dashboard():
     st.markdown("""
-        <style>
-            .main-title {text-align:center; font-size:2.5em; font-weight:bold; color:#2E86C1;}
-            .section-header {font-size:1.5em; font-weight:bold; color:#117A65; margin-top:2em;}
-            .stButton>button {background-color: #F39C12; color: white; border-radius: 8px;}
-            .stDataFrame {background-color: #FDFEFE;}
-            .sidebar .sidebar-content {background: linear-gradient(135deg, #FDEB71 0%, #F8D800 100%);}
-        </style>
-    """, unsafe_allow_html=True)
+            <style>
+                .main-title {text-align:center; font-size:2.5em; font-weight:bold; color:#2E86C1;}
+                .section-header {font-size:1.5em; font-weight:bold; color:#117A65; margin-top:2em;}
+                .stButton>button {background-color: #F39C12; color: white; border-radius: 8px;}
+                .stDataFrame {background-color: #FDFEFE;}
+                .sidebar .sidebar-content {background: linear-gradient(135deg, #FDEB71 0%, #F8D800 100%);}
+            </style>
+        """, unsafe_allow_html=True)
 
     st.markdown("<div class='main-title'>🌏 GeoBoost Tourism & Culture Dashboard</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>Explore India's tourism trends, cultural richness, and vibrant art forms. Use the sidebar to navigate and filter data. ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # --- Data Loaders ---
-    @st.cache_data
-    def load_inbound_data():
-        conn = snowflake.connector.connect(
+    # Connect to Snowflake
+    def get_snowflake_connection():
+        return snowflake.connector.connect(
             user=st.secrets["snowflake"]["user"],
             password=st.secrets["snowflake"]["password"],
             account=st.secrets["snowflake"]["account"],
@@ -29,263 +27,240 @@ def show_dashboard():
             database=st.secrets["snowflake"]["database"],
             schema=st.secrets["snowflake"]["schema"]
         )
-        df = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
-        conn.close()
-        return df
-
-    @st.cache_data
-    def load_country_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
-        conn.close()
-        return df_country
-
-    @st.cache_data
+    conn = get_snowflake_connection()
     def load_revenue_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
         df_revenue = pd.read_sql("SELECT * FROM REVENUE", conn)
-        conn.close()
         return df_revenue
+    def load_country_data():
+        df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
+        return df_country
+    def load_inbound_data():
+        df_inbound = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
+        return df_inbound
+    # Load data from Snowflake
+    df = load_revenue_data()
+    country_df = load_country_data()
+    inbound_df = load_inbound_data()
+    inbound_df.columns = [c.strip() for c in inbound_df.columns]
+    inbound_df = inbound_df.apply(pd.to_numeric, errors='ignore')
+    # Sidebar filters
+    st.sidebar.header("🔎 Filter Options")
+    metrics = {
+        "Foreign Tourist Arrivals (FTAs)": "FTAS_IN_INDIA_MILLION",
+        "NRIs Arrivals": "NRIS_ARRIVALS_MILLION",
+        "International Tourist Arrivals": "INTERNATIONAL_TOURIST_ARRIVALS_MILLION"
+    }
+    selected_metrics = st.sidebar.multiselect(
+        "Select metrics to display",
+        list(metrics.keys()),
+        default=list(metrics.keys())
+    )
+    year_range = st.sidebar.slider(
+        "Select Year Range",
+        int(inbound_df["YEAR"].min()),
+        int(inbound_df["YEAR"].max()),
+        (int(inbound_df["YEAR"].min()), int(inbound_df["YEAR"].max()))
+    )
+    single_year = st.sidebar.selectbox(
+        "Select Year for Comparison",
+        sorted(inbound_df["YEAR"].unique()),
+        index=len(inbound_df["YEAR"].unique())-1
+    )
 
-    @st.cache_data
-    def load_art_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
+    # Filter data by year range
+    filtered_df = inbound_df[(inbound_df["YEAR"] >= year_range[0]) & (inbound_df["YEAR"] <= year_range[1])]
+    single_year_df = inbound_df[inbound_df["YEAR"] == single_year]
+
+    st.title("🇮🇳 India Inbound Tourism Dashboard")
+    st.markdown("""
+    Welcome to the interactive dashboard for India's inbound tourism!  
+    Use the sidebar to filter by year and metrics.  
+    Explore trends, compare years, and see percentage changes with colorful, interactive charts.
+    """)
+
+    with st.expander("📋 Show Raw Data"):
+        st.dataframe(filtered_df)
+
+    # --- Line Chart: Trends Over Years ---
+    st.header("📈 YEAR-wise Tourism Trends")
+    if selected_metrics:
+        fig = px.line(
+            filtered_df,
+            x="YEAR",
+            y=[metrics[m] for m in selected_metrics],
+            markers=True,
+            color_discrete_sequence=px.colors.qualitative.Bold,
+            labels={"value": "Number of Tourists (Million)", "variable": "Metric", "YEAR": "YEAR"},
+            template="plotly"
         )
-        df_art = pd.read_sql("SELECT * FROM ARTIST", conn)
-        conn.close()
-        return df_art
+        fig.update_layout(legend_title_text="Metric")
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Please select at least one metric to display.")
 
-    @st.cache_data
-    def load_fest_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
+    # --- Bar Chart: Single Year Comparison ---
+    st.header(f"📊 Metric Comparison for {single_year}")
+    if selected_metrics:
+        bar_data = {
+            "Metric": [m for m in selected_metrics],
+            "Value": [float(single_year_df[metrics[m]]) for m in selected_metrics]
+        }
+        bar_df = pd.DataFrame(bar_data)
+        fig_bar = px.bar(
+            bar_df,
+            x="Metric",
+            y="Value",
+            color="Metric",
+            color_discrete_sequence=px.colors.qualitative.Vivid,
+            labels={"Value": "Number of Tourists (Million)", "Metric": "Metric"},
+            template="plotly"
         )
-        df_fest = pd.read_sql("SELECT * FROM FESTIVAL", conn)
-        conn.close()
-        return df_fest
+        fig_bar.update_layout(showlegend=False)
+        st.plotly_chart(fig_bar, use_container_width=True)
 
-    @st.cache_data
-    def load_food_data():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
+    # --- Percentage Change Visualization ---
+    st.header("🔄 Year-wise Percentage Change")
+    change_metrics = {
+        "FTAs % Change": "PERCENTAGE_CHANGE_FTAS",
+        "NRIs % Change": "PERCENTAGE_CHANGE_NRIS",
+        "ITAs % Change": "PERCENTAGE_CHANGE_ITAS"
+    }
+    selected_change = st.multiselect(
+        "Select percentage change metrics",
+        list(change_metrics.keys()),
+        default=list(change_metrics.keys())
+    )
+    if selected_change:
+        # Melt the DataFrame to long format for Plotly
+        melted = filtered_df.melt(
+            id_vars=["YEAR"],
+            value_vars=[change_metrics[m] for m in selected_change],
+            var_name="Metric",
+            value_name="Percentage Change"
         )
-        df_food = pd.read_sql("SELECT * FROM FOOD", conn)
-        conn.close()
-        return df_food
+        # Map back to friendly names
+        metric_name_map = {v: k for k, v in change_metrics.items()}
+        melted["Metric"] = melted["Metric"].map(metric_name_map)
 
-    # Load data
-    df = load_inbound_data()
-    df_country = load_country_data()
-    df_revenue = load_revenue_data()
-    df_art = load_art_data()
-    df_fest = load_fest_data()
-    df_food = load_food_data()
+        fig2 = px.line(
+            melted,
+            x="YEAR",
+            y="Percentage Change",
+            color="Metric",
+            markers=True,
+            color_discrete_sequence=px.colors.qualitative.Pastel,
+            labels={"Percentage Change": "Percentage Change (%)", "YEAR": "Year", "Metric": "Metric"},
+            template="plotly"
+        )
+        fig2.update_layout(legend_title_text="Metric")
+        st.plotly_chart(fig2, use_container_width=True)
+    else:
+        st.info("Please select at least one percentage change metric.")
 
-    # Fill NA for all dataframes
-    df = df.fillna(0)
-    df_country = df_country.fillna(0)
-    df_revenue = df_revenue.fillna(0)
-    df_art = df_art.fillna(0)
-    df_fest = df_fest.fillna(0)
-    df_food = df_food.fillna(0)
+    # Sidebar filters
+    st.sidebar.header("🔎 Filter Options")
+    months = st.sidebar.multiselect(
+        "Select Months",
+        df["MONTH"].unique(),
+        default=list(df["MONTH"].unique())
+    )
+    pct_options = [
+        "PERCENTAGE_CHANGE_2020",
+        "PERCENTAGE_CHANGE_2021",
+        "PERCENTAGE_CHANGE_20_21",
+        "PERCENTAGE_CHANGE_22_21"
+    ]
+    selected_pct = st.sidebar.selectbox(
+        "Select Percentage Change Column",
+        pct_options,
+        format_func=lambda x: x.replace("_", " ").title()
+    )
 
-    # Sidebar navigation
-    st.sidebar.markdown("## 🧭 Navigation")
-    page = st.sidebar.radio("Go to", ["🏨 Tourism", "🎭 Culture", "🖼️ Art"])
+    # Filtered data
+    filtered_df = df[df["MONTH"].isin(months)]
 
-    # --- TOURISM PAGE ---
-    if page == "🏨 Tourism":
-        st.markdown("<div class='section-header'>📊 Tourism Dashboard</div>", unsafe_allow_html=True)
-        st.markdown("""
-        <ul>
-            <li>📈 <b>Year-wise Trends:</b> FTAs, NRIs, International Tourist Arrivals</li>
-            <li>🌍 <b>Country-wise Arrivals:</b> Interactive pie chart</li>
-            <li>💰 <b>Revenue Trends:</b> Month-wise & Year-wise</li>
-        </ul>
-        """, unsafe_allow_html=True)
 
-        st.sidebar.header("🎚️ Filter Options")
-        year_range = st.sidebar.slider(
-            "Select Year Range (Inbound Tourism)",
-            min_value=int(df["YEAR"].min()),
-            max_value=int(df["YEAR"].max()),
-            value=(int(df["YEAR"].min()), int(df["YEAR"].max()))
+    st.title("💰 India Tourism Revenue Dashboard")
+    st.markdown("""
+    Explore monthly tourism revenue and trends.  
+    Use the filters to customize your view.  
+    """)
+
+    # Layout: Two columns for bar and pie chart
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Monthly Revenue")
+        fig1 = px.bar(
+            filtered_df,
+            x="MONTH",
+            y="FEE_FROM_TOURISM",
+            color="MONTH",
+            color_discrete_sequence=px.colors.qualitative.Vivid,
+            labels={"FEE_FROM_TOURISM": "Tourism Revenue (₹ crore)", "MONTH": "MONTH"},
+            template="plotly_white"
+        )
+        fig1.update_layout(showlegend=False)
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+        st.subheader("Revenue Share by Month")
+        fig2 = px.pie(
+            filtered_df,
+            names="MONTH",
+            values="FEE_FROM_TOURISM",
+            color_discrete_sequence=px.colors.qualitative.Pastel,
+            hole=0.4,
+            template="plotly_white"
+        )
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # Percentage Change Chart
+    st.subheader(f"Monthly {selected_pct.replace('_', ' ').title()}")
+    fig3 = px.line(
+        filtered_df,
+        x="MONTH",
+        y=selected_pct,
+        markers=True,
+        color_discrete_sequence=["#E45756"],
+        labels={selected_pct: "Percentage Change (%)", "MONTH": "MONTH"},
+        template="plotly_white"
+    )
+    st.plotly_chart(fig3, use_container_width=True)
+
+    # Data Table and Download
+    with st.expander("📋 Show Data Table"):
+        st.dataframe(filtered_df)
+        st.download_button(
+            "Download Filtered Data",
+            filtered_df.to_csv(index=False),
+            "revenue_filtered.csv"
         )
 
-        filtered_df = df[(df["YEAR"] >= year_range[0]) & (df["YEAR"] <= year_range[1])]
-        tourism_type = st.sidebar.multiselect(
-            "Select Tourism Types to Display",
-            options=["FTAs", "NRIs", "International Tourist Arrivals"],
-            default=["FTAs", "NRIs", "International Tourist Arrivals"]
-        )
-        filtered_df = filtered_df.fillna(0)
+    # --- Country-wise Tourist Arrivals ---
+    st.header("🌍 Country-wise Tourist Visits to India")
+    with st.expander("Show Country-wise Tourist Data"):
+        st.dataframe(country_df)
 
-        year_country = st.sidebar.selectbox(
-            "Select Year (Country-wise Arrivals)",
-            options=["2019", "2020", "2021", "2022"],
-            index=0
-        )
-        year_column = f"NUMBEROFARRIVALS{year_country}"
-        filtered_country_df = df_country[["COUNTRY", year_column]].copy()
-        filtered_country_df[year_column] = pd.to_numeric(filtered_country_df[year_column], errors="coerce")
-        filtered_country_df = filtered_country_df[filtered_country_df[year_column] > 0]
+    # Choose year to display
+    year = st.selectbox(
+        "Select Year for Tourist Arrivals",
+        ["2019", "2020", "2021", "2022"],
+        index=0
+    )
+    arrivals_col = f"NUMBEROFARRIVALS{year}"
 
-        countries = st.sidebar.multiselect(
-            "Select Countries",
-            options=filtered_country_df["COUNTRY"].unique(),
-            default=filtered_country_df["COUNTRY"].unique()
-        )
-        filtered_country_df = filtered_country_df[filtered_country_df["COUNTRY"].isin(countries)]
-
-        selected_year = st.sidebar.selectbox(
-            "Select Year (Revenue)",
-            options=["2020", "2021a", "2021b", "2022"],
-            index=0
-        )
-
-        selected_months = st.sidebar.multiselect(
-            "Select Months (Revenue)",
-            options=df_revenue["MONTH"].unique(),
-            default=df_revenue["MONTH"].unique()
-        )
-        filtered_revenue_df = df_revenue[df_revenue["MONTH"].isin(selected_months)]
-
-        # Ensure numeric columns for plotting
-        for col in ["FTAS_IN_INDIA_MILLION", "NRIS_ARRIVALS_MILLION", "INTERNATIONAL_TOURIST_ARRIVALS_MILLION"]:
-            filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce").fillna(0)
-        filtered_revenue_df["FEE_FROM_TOURISM"] = pd.to_numeric(filtered_revenue_df["FEE_FROM_TOURISM"], errors="coerce").fillna(0)
-        filtered_revenue_df[f"PERCENTAGE_CHANGE_{selected_year}"] = pd.to_numeric(
-            filtered_revenue_df.get(f"PERCENTAGE_CHANGE_{selected_year}", 0), errors="coerce"
-        ).fillna(0)
-
-        # Minimal Plotly Charts
-        with st.spinner("Loading tourism insights..."):
-            col1, col2 = st.columns(2)
-            if "FTAs" in tourism_type:
-                fig_ftas = px.line(
-                    filtered_df,
-                    x="YEAR",
-                    y="FTAS_IN_INDIA_MILLION",
-                    labels={"FTAS_IN_INDIA_MILLION": "FTAs (in Millions)", "YEAR": "YEAR"},
-                    markers=True,
-                    color_discrete_sequence=["#1ABC9C"]
-                )
-                fig_ftas.update_layout(title=None, showlegend=False)
-                with col1:
-                    st.plotly_chart(fig_ftas, use_container_width=True)
-
-            if "NRIs" in tourism_type:
-                fig_nris = px.line(
-                    filtered_df,
-                    x="YEAR",
-                    y="NRIS_ARRIVALS_MILLION",
-                    labels={"NRIS_ARRIVALS_MILLION": "NRIs (in Millions)", "YEAR": "YEAR"},
-                    markers=True,
-                    color_discrete_sequence=["#F39C12"]
-                )
-                fig_nris.update_layout(title=None, showlegend=False)
-                with col2:
-                    st.plotly_chart(fig_nris, use_container_width=True)
-
-            if "International Tourist Arrivals" in tourism_type:
-                fig_itas = px.line(
-                    filtered_df,
-                    x="YEAR",
-                    y="INTERNATIONAL_TOURIST_ARRIVALS_MILLION",
-                    labels={"INTERNATIONAL_TOURIST_ARRIVALS_MILLION": "ITAs (in Millions)", "YEAR": "YEAR"},
-                    markers=True,
-                    color_discrete_sequence=["#8E44AD"]
-                )
-                fig_itas.update_layout(title=None, showlegend=False)
-                st.plotly_chart(fig_itas, use_container_width=True)
-
-            fig_pie = px.pie(
-                filtered_country_df,
-                names="COUNTRY",
-                values=year_column,
-                title=None,
-                color_discrete_sequence=px.colors.qualitative.Set3,
-                hole=0.4
-            )
-            fig_pie.update_layout(showlegend=False)
-            st.plotly_chart(fig_pie, use_container_width=True)
-
-            st.markdown("<div class='section-header'>💰 Tourism Revenue</div>", unsafe_allow_html=True)
-            bar_chart = px.bar(
-                filtered_revenue_df,
-                x="MONTH",
-                y="FEE_FROM_TOURISM",
-                labels={"MONTH": "MONTH", "FEE_FROM_TOURISM": "Revenue (₹ crore)"},
-                color="MONTH",
-                color_discrete_sequence=px.colors.qualitative.Set3
-            )
-            bar_chart.update_layout(title=None, showlegend=False)
-            st.plotly_chart(bar_chart, use_container_width=True)
-
-            line_chart = px.line(
-                filtered_revenue_df,
-                x="MONTH",
-                y=f"PERCENTAGE_CHANGE_{selected_year}",
-                labels={"MONTH": "MONTH", f"PERCENTAGE_CHANGE_{selected_year}": "Percentage Change (%)"},
-                markers=True,
-                color_discrete_sequence=["#E74C3C"]
-            )
-            line_chart.update_layout(title=None, showlegend=False)
-            st.plotly_chart(line_chart, use_container_width=True)
-
-            with st.expander("🔎 See Filtered Data Tables"):
-                st.markdown("**Inbound Tourism Data**")
-                st.dataframe(filtered_df)
-                st.markdown("**Country-wise Data**")
-                st.dataframe(filtered_country_df)
-                st.markdown("**Revenue Data**")
-                st.dataframe(filtered_revenue_df)
-
-    # --- CULTURE PAGE ---
-    elif page == "🎭 Culture":
-        st.markdown("<div class='section-header'>🎨 Top 10 Art Forms in India</div>", unsafe_allow_html=True)
-        st.markdown("Explore the rich cultural heritage of India through its diverse art forms. Below is a table showcasing the top 10 art forms from various states. 🌟")
-        st.table(df_art.head(10))
-
-        st.markdown("<div class='section-header'>🎉 Top 10 Festivals in India</div>", unsafe_allow_html=True)
-        st.markdown("Celebrate the vibrant festivals across India. Below is a table showcasing the top 10 festivals from various states. 🪔")
-        st.table(df_fest.head(10))
-
-        st.markdown("<div class='section-header'>🍽️ Top 10 Foods in India</div>", unsafe_allow_html=True)
-        st.markdown("Discover the variety of traditional Indian cuisine. Below is a table showcasing the top 10 foods from different states. 🍛")
-        st.table(df_food.head(10))
-
-    # --- ART PAGE ---
-    elif page == "🖼️ Art":
-        st.markdown("<div class='section-header'>🖼️ Art Page Coming Soon</div>", unsafe_allow_html=True)
-        st.markdown("Detailed state-wise cultural data will be available here. Stay tuned for more updates! 🎨")
+    # Sort and plot with Plotly
+    tourists_sorted = country_df.sort_values(by=arrivals_col, ascending=False)
+    fig3 = px.bar(
+        tourists_sorted,
+        x=arrivals_col,
+        y='COUNTRY',
+        orientation='h',
+        color=arrivals_col,
+        color_continuous_scale='viridis',
+        labels={arrivals_col: "Tourists", "COUNTRY": "Country"},
+        title=f"Number of Tourists by Country ({year})"
+    )
+    fig3.update_layout(yaxis={'categoryorder':'total ascending'}, title=None)
+    st.plotly_chart(fig3, use_container_width=True)
