@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import snowflake.connector
 import plotly.express as px
+import altair as alt
 import warnings
 
 # Suppress SQLAlchemy warning
@@ -92,24 +93,31 @@ def show_dashboard():
     with st.expander("📋 Show Raw Data"):
         st.dataframe(filtered_df)
 
-    # --- Line Chart: Trends Over Years ---
+    # --- Line Chart: Trends Over Years (Altair) ---
     st.header("📈 YEAR-wise Tourism Trends")
     if selected_metrics:
-        fig = px.line(
-            filtered_df,
-            x="YEAR",
-            y=[metrics[m] for m in selected_metrics],
-            markers=True,
-            color_discrete_sequence=px.colors.qualitative.Bold,
-            labels={"value": "Number of Tourists (Million)", "variable": "Metric", "YEAR": "YEAR"},
-            template="plotly"
+        melted = filtered_df.melt(
+            id_vars=["YEAR"],
+            value_vars=[metrics[m] for m in selected_metrics],
+            var_name="Metric",
+            value_name="Value"
         )
-        fig.update_layout(legend_title_text="Metric")
-        st.plotly_chart(fig, use_container_width=True)
+        chart = alt.Chart(melted).mark_line(point=True).encode(
+            x=alt.X("YEAR:O", title="Year"),
+            y=alt.Y("Value:Q", title="Number of Tourists (Million)"),
+            color=alt.Color("Metric:N", title="Metric"),
+            tooltip=["YEAR", "Metric", "Value"]
+        ).properties(
+            width="container",
+            height=400
+        ).configure_legend(
+            orient="top"
+        )
+        st.altair_chart(chart, use_container_width=True)
     else:
         st.info("Please select at least one metric to display.")
 
-    # --- Bar Chart: Single Year Comparison ---
+    # --- Bar Chart: Single Year Comparison (Altair) ---
     st.header(f"📊 Metric Comparison for {single_year}")
     if selected_metrics:
         bar_data = {
@@ -117,19 +125,18 @@ def show_dashboard():
             "Value": [float(single_year_df[metrics[m]].iloc[0]) for m in selected_metrics]
         }
         bar_df = pd.DataFrame(bar_data)
-        fig_bar = px.bar(
-            bar_df,
-            x="Metric",
-            y="Value",
-            color="Metric",
-            color_discrete_sequence=px.colors.qualitative.Vivid,
-            labels={"Value": "Number of Tourists (Million)", "Metric": "Metric"},
-            template="plotly"
+        bar_chart = alt.Chart(bar_df).mark_bar(size=40).encode(
+            x=alt.X("Metric:N", title="Metric"),
+            y=alt.Y("Value:Q", title="Number of Tourists (Million)"),
+            color=alt.Color("Metric:N", scale=alt.Scale(scheme="category20b")),
+            tooltip=["Metric", "Value"]
+        ).properties(
+            width="container",
+            height=400
         )
-        fig_bar.update_layout(showlegend=False)
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.altair_chart(bar_chart, use_container_width=True)
 
-    # --- Percentage Change Visualization ---
+    # --- Percentage Change Visualization (Altair) ---
     st.header("🔄 Year-wise Percentage Change")
     change_metrics = {
         "FTAs % Change": "PERCENTAGE_CHANGE_FTAS",
@@ -142,29 +149,24 @@ def show_dashboard():
         default=list(change_metrics.keys())
     )
     if selected_change:
-        # Melt the DataFrame to long format for Plotly
         melted = filtered_df.melt(
             id_vars=["YEAR"],
             value_vars=[change_metrics[m] for m in selected_change],
             var_name="Metric",
             value_name="Percentage Change"
         )
-        # Map back to friendly names
         metric_name_map = {v: k for k, v in change_metrics.items()}
         melted["Metric"] = melted["Metric"].map(metric_name_map)
-
-        fig2 = px.line(
-            melted,
-            x="YEAR",
-            y="Percentage Change",
-            color="Metric",
-            markers=True,
-            color_discrete_sequence=px.colors.qualitative.Pastel,
-            labels={"Percentage Change": "Percentage Change (%)", "YEAR": "Year", "Metric": "Metric"},
-            template="plotly"
+        pct_chart = alt.Chart(melted).mark_line(point=True).encode(
+            x=alt.X("YEAR:O", title="Year"),
+            y=alt.Y("Percentage Change:Q", title="Percentage Change (%)"),
+            color=alt.Color("Metric:N", title="Metric", scale=alt.Scale(scheme="pastel1")),
+            tooltip=["YEAR", "Metric", "Percentage Change"]
+        ).properties(
+            width="container",
+            height=400
         )
-        fig2.update_layout(legend_title_text="Metric")
-        st.plotly_chart(fig2, use_container_width=True)
+        st.altair_chart(pct_chart, use_container_width=True)
     else:
         st.info("Please select at least one percentage change metric.")
 
@@ -201,17 +203,16 @@ def show_dashboard():
 
     with col1:
         st.subheader("Monthly Revenue")
-        fig1 = px.bar(
-            filtered_rev_df,
-            x="MONTH",
-            y="FEE_FROM_TOURISM",
-            color="MONTH",
-            color_discrete_sequence=px.colors.qualitative.Vivid,
-            labels={"FEE_FROM_TOURISM": "Tourism Revenue (₹ crore)", "MONTH": "MONTH"},
-            template="plotly_white"
+        bar_chart_rev = alt.Chart(filtered_rev_df).mark_bar(size=40).encode(
+            x=alt.X("MONTH:N", title="Month", sort=list(df["MONTH"].unique())),
+            y=alt.Y("FEE_FROM_TOURISM:Q", title="Tourism Revenue (₹ crore)"),
+            color=alt.Color("MONTH:N", scale=alt.Scale(scheme="category20b")),
+            tooltip=["MONTH", "FEE_FROM_TOURISM"]
+        ).properties(
+            width="container",
+            height=400
         )
-        fig1.update_layout(showlegend=False)
-        st.plotly_chart(fig1, use_container_width=True)
+        st.altair_chart(bar_chart_rev, use_container_width=True)
 
     with col2:
         st.subheader("Revenue Share by Month")
@@ -225,18 +226,18 @@ def show_dashboard():
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # Percentage Change Chart
+    # Percentage Change Chart (Altair)
     st.subheader(f"Monthly {selected_pct.replace('_', ' ').title()}")
-    fig3 = px.line(
-        filtered_rev_df,
-        x="MONTH",
-        y=selected_pct,
-        markers=True,
-        color_discrete_sequence=["#E45756"],
-        labels={selected_pct: "Percentage Change (%)", "MONTH": "MONTH"},
-        template="plotly_white"
+    pct_chart_rev = alt.Chart(filtered_rev_df).mark_line(point=True).encode(
+        x=alt.X("MONTH:N", title="Month", sort=list(df["MONTH"].unique())),
+        y=alt.Y(f"{selected_pct}:Q", title="Percentage Change (%)"),
+        color=alt.value("#E45756"),
+        tooltip=["MONTH", selected_pct]
+    ).properties(
+        width="container",
+        height=400
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.altair_chart(pct_chart_rev, use_container_width=True)
 
     # Data Table and Download
     with st.expander("📋 Show Data Table"):
@@ -247,7 +248,7 @@ def show_dashboard():
             "revenue_filtered.csv"
         )
 
-    # --- Country-wise Tourist Arrivals ---
+    # --- Country-wise Tourist Arrivals (Altair Bar) ---
     st.header("🌍 Country-wise Tourist Visits to India")
     with st.expander("Show Country-wise Tourist Data"):
         st.dataframe(country_df)
@@ -260,17 +261,15 @@ def show_dashboard():
     )
     arrivals_col = f"NUMBEROFARRIVALS{year}"
 
-    # Sort and plot with Plotly
     tourists_sorted = country_df.sort_values(by=arrivals_col, ascending=False)
-    fig4 = px.bar(
-        tourists_sorted,
-        x=arrivals_col,
-        y='COUNTRY',
-        orientation='h',
-        color=arrivals_col,
-        color_continuous_scale='viridis',
-        labels={arrivals_col: "Tourists", "COUNTRY": "Country"},
+    bar_chart_country = alt.Chart(tourists_sorted).mark_bar(size=20).encode(
+        x=alt.X(f"{arrivals_col}:Q", title="Tourists"),
+        y=alt.Y("COUNTRY:N", sort='-x', title="Country"),
+        color=alt.Color(f"{arrivals_col}:Q", scale=alt.Scale(scheme="viridis")),
+        tooltip=["COUNTRY", arrivals_col]
+    ).properties(
+        width="container",
+        height=600,
         title=f"Number of Tourists by Country ({year})"
     )
-    fig4.update_layout(yaxis={'categoryorder':'total ascending'}, title=None)
-    st.plotly_chart(fig4, use_container_width=True)
+    st.altair_chart(bar_chart_country, use_container_width=True)
