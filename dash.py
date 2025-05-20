@@ -24,6 +24,7 @@ def show_dashboard():
     st.markdown("---")
 
     # Connect to Snowflake
+    @st.cache_data
     def get_snowflake_connection():
         return snowflake.connector.connect(
             user=st.secrets["snowflake"]["user"],
