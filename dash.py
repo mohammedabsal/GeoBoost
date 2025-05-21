@@ -189,8 +189,7 @@ def show_dashboard():
     ]
     selected_pct = st.sidebar.selectbox(
         "Select Percentage Change Column",
-        pct_options,
-        format_func=lambda x: x.replace("_", " ").title()
+        pct_options
     )
 
     # Filtered data
@@ -231,7 +230,7 @@ def show_dashboard():
         st.plotly_chart(fig2, use_container_width=True)
 
     # Percentage Change Chart (Altair)
-    st.subheader(f"Monthly {selected_pct.replace('_', ' ').title()}")
+    st.subheader(f"Monthly {selected_pct.title()}")
     pct_chart_rev = alt.Chart(filtered_rev_df).mark_line(point=True).encode(
         x=alt.X("MONTH:N", title="Month", sort=list(df["MONTH"].unique())),
         y=alt.Y(f"{selected_pct}:Q", title="Percentage Change (%)"),
