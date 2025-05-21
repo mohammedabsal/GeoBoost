@@ -182,16 +182,16 @@ def show_dashboard():
         df["MONTH"].unique(),
         default=list(df["MONTH"].unique())
     )
-    # pct_options = [
-    #     "PERCENTAGECHANGE2020",
-    #     "PERCENTAGECHANGE2021",
-    #     "PERCENTAGECHANGE2020to2021",
-    #     "PERCENTAGECHANGE2021to2022"
-    # ]
-    # selected_pct = st.sidebar.selectbox(
-    #     "Select Percentage Change Column",
-    #     pct_options
-    # )
+    pct_options = [
+        "PERCENTAGECHANGE2020",
+        "PERCENTAGECHANGE2021",
+        "PERCENTAGECHANGE2020to2021",
+        "PERCENTAGECHANGE2021to2022"
+    ]
+    selected_pct = st.sidebar.selectbox(
+        "Select Percentage Change Column",
+        pct_options
+    )
 
     # Filtered data
     filtered_rev_df = df[df["MONTH"].isin(months)]
@@ -234,7 +234,7 @@ def show_dashboard():
     bar_chart = alt.Chart(country_df).mark_bar().encode(
     x=alt.X("COUNTRY:N", sort='-y', title="Country"),
     y=alt.Y(selected_pct, title="Percentage Change (%)"),
-    tooltip=["COUNTRY", "PERCENTAGECHANGE:Q"],
+    tooltip=["COUNTRY", selected_pct],
 ).properties(
     width=800,
     height=500,
