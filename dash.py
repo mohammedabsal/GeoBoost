@@ -50,7 +50,7 @@ def show_dashboard():
     # Load data from Snowflake
     df = load_revenue_data()
     country_df = load_country_data()
-    country_df.columns = [c.strip().upper() for c in country_df.columns]
+
     inbound_df = load_inbound_data()
     inbound_df.columns = [c.strip() for c in inbound_df.columns]
     # Fix FutureWarning for pd.to_numeric
@@ -231,17 +231,18 @@ def show_dashboard():
         st.plotly_chart(fig2, use_container_width=True)
 
     # Percentage Change Chart (Altair)
-    st.subheader(f"Country - {selected_pct.title()}")
-    pct_chart_rev = alt.Chart(country_df).mark_line(point=True).encode(
-    x=alt.X("COUNTRY:N", title="Country", sort=list(df["COUNTRY"].unique())),
-    y=alt.Y(f"{selected_pct}:Q", title="Percentage Change (%)"),
-    color=alt.value("#E45756"),
-    tooltip=["COUNTRY", selected_pct]
+    filtered_country_df = country_df[country_df["COUNTRY"], selected_pct].dropna()
+    bar_chart = alt.Chart(filtered_country_df).mark_bar().encode(
+    x=alt.X("COUNTRY:N", sort='-y', title="Country"),
+    y=alt.Y("PERCENTAGECHANGE:Q", title="Percentage Change (%)"),
+    tooltip=["COUNTRY", "PERCENTAGECHANGE:Q"],
 ).properties(
-    width="container",
-    height=400
+    width=800,
+    height=500,
+    title=f"{selected_pct} by Country"
 )
-    st.altair_chart(pct_chart_rev, use_container_width=True)
+
+    st.altair_chart(bar_chart, use_container_width=True)
 
     # Data Table and Download
     with st.expander("📋 Show Data Table"):
