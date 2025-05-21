@@ -12,7 +12,7 @@ def load_lottie_url(url: str):
         return None
     return r.json()
 def show_storyteller():
-    co = st.secrets["COHERE_API_KEY"]
+    co = cohere.Client(st.secrets["COHERE_API_KEY"])
     @st.cache_data
     def load_snippets():
         conn = snowflake.connector.connect(
