@@ -90,14 +90,16 @@ def show_storyteller():
     """, unsafe_allow_html=True)
     st.markdown('<div class="title-text">🎭 Virtual Cultural Storyteller</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Choose your preferences and let AI narrate your dream cultural journey through India! 🌏✨</div>', unsafe_allow_html=True)
-    lottie_culture = load_lottie_url("https://lottie.host/00a25b81-7f6d-47a3-b9b8-cd982bfeac57/0Csz7nhtoI.json")
-    st_lottie(lottie_culture, height=250, speed=1)
+    # lottie_culture = load_lottie_url("https://lottie.host/00a25b81-7f6d-47a3-b9b8-cd982bfeac57/0Csz7nhtoI.json")
+    # st_lottie(lottie_culture, height=250, speed=1)
     data = load_snippets()
     col1, col2 = st.columns(2)
     with col1:
         regions = st.multiselect("🌍 Select Region(s):", sorted(data['REGION'].unique()))
     with col2:
         interests = st.multiselect("🎨 Choose Interests:", ["Dance", "Food", "Art"])
+    lottie_culture = load_lottie_url("https://lottie.host/00a25b81-7f6d-47a3-b9b8-cd982bfeac57/0Csz7nhtoI.json")
+    st_lottie(lottie_culture, height=250, speed=1)
     if st.button("✨ Generate My Cultural Story"):
         if not regions or not interests:
             st.warning("⚠️ Please select at least one region and one interest.")
