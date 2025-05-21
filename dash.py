@@ -184,9 +184,7 @@ def show_dashboard():
     )
     pct_options = [
         "PERCENTAGECHANGE2020",
-        "PERCENTAGECHANGE2021",
-        "PERCENTAGECHANGE2020to2021",
-        "PERCENTAGECHANGE2021to2022"
+        "PERCENTAGECHANGE2021"
     ]
     selected_pct = st.sidebar.selectbox(
         "Select Percentage Change Column",
