@@ -277,3 +277,8 @@ def show_dashboard():
         title=f"Number of Tourists by Country ({year})"
     )
     st.altair_chart(bar_chart_country, use_container_width=True)
+    st.markdown("""
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)

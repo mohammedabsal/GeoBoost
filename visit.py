@@ -124,9 +124,7 @@ def show_visit():
 
     # Footer
     st.markdown("""
-        <hr>
-        <div style='text-align:center;'>
-            <h4 style='color:#117A65;'>💚 Thank you for choosing mindful travel!</h4>
-            <p style='font-size:15px;'>Crafted with care by <b>Team GeoBoost</b> ✨</p>
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
         </div>
     """, unsafe_allow_html=True)

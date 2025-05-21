@@ -120,3 +120,8 @@ def show_storyteller():
                 st.markdown('<div class="story-box">', unsafe_allow_html=True)
                 st.markdown(f"### 🌟 Your Cultural Story\n\n{story}")
                 st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown("""
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)

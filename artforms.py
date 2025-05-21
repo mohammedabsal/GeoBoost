@@ -78,3 +78,8 @@ def show_artforms():
             }
         </style>
     """, unsafe_allow_html=True)
+    st.markdown("""
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)

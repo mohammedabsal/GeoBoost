@@ -314,3 +314,8 @@ def show_gallery():
     """
 
     components.html(custom_html, height=800, scrolling=False)
+    st.markdown("""
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)

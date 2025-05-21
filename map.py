@@ -103,6 +103,7 @@ def show_map():
 
     # Footer animation using Lottie
     st.markdown("""
-        <hr>
-        <center><h4 style='color:gray;'>Made with ❤️ by Team GeoBoost</h4></center>
+        <div class="footer">
+            © 2025 GeoBoost. All rights reserved.
+        </div>
     """, unsafe_allow_html=True)
