@@ -50,6 +50,7 @@ def show_dashboard():
     # Load data from Snowflake
     df = load_revenue_data()
     country_df = load_country_data()
+    country_df.columns = [c.strip().upper() for c in country_df.columns]
     inbound_df = load_inbound_data()
     inbound_df.columns = [c.strip() for c in inbound_df.columns]
     # Fix FutureWarning for pd.to_numeric
@@ -237,9 +238,9 @@ def show_dashboard():
     color=alt.value("#E45756"),
     tooltip=["MONTH", selected_pct]
 ).properties(
-        width="container",
-        height=400
-    )
+    width="container",
+    height=400
+)
     st.altair_chart(pct_chart_rev, use_container_width=True)
 
     # Data Table and Download
