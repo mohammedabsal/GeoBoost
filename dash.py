@@ -4,10 +4,7 @@ import snowflake.connector
 import plotly.express as px
 import altair as alt
 import warnings
-
-# Suppress SQLAlchemy warning
 warnings.filterwarnings("ignore", message="pandas only supports SQLAlchemy")
-
 def show_dashboard():
     st.markdown("""
             <style>
@@ -22,8 +19,6 @@ def show_dashboard():
     st.markdown("<div class='main-title'>🌏 GeoBoost Tourism & Culture Dashboard</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>Explore India's tourism trends, cultural richness, and vibrant art forms. Use the sidebar to navigate and filter data. ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-
-    # Connect to Snowflake
     def get_snowflake_connection():
         return snowflake.connector.connect(
             user=st.secrets["snowflake"]["user"],
@@ -47,19 +42,15 @@ def show_dashboard():
     def load_inbound_data():
         df_inbound = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
         return df_inbound
-    # Load data from Snowflake
     df = load_revenue_data()
     country_df = load_country_data()
-
     inbound_df = load_inbound_data()
     inbound_df.columns = [c.strip() for c in inbound_df.columns]
-    # Fix FutureWarning for pd.to_numeric
     for col in inbound_df.columns:
         try:
             inbound_df[col] = pd.to_numeric(inbound_df[col])
         except Exception:
             continue
-
     # Sidebar filters
     st.sidebar.header("🔎 Filter Options")
     metrics = {
@@ -94,11 +85,10 @@ def show_dashboard():
     Use the sidebar to filter by year and metrics.  
     Explore trends, compare years, and see percentage changes with colorful, interactive charts.
     """)
-
     with st.expander("📋 Show Raw Data"):
         st.dataframe(filtered_df)
 
-    # --- Line Chart: Trends Over Years (Altair) ---
+    # --- Line Chart---
     st.header("📈 YEAR-wise Tourism Trends")
     if selected_metrics:
         melted = filtered_df.melt(
@@ -122,7 +112,7 @@ def show_dashboard():
     else:
         st.info("Please select at least one metric to display.")
 
-    # --- Bar Chart: Single Year Comparison (Altair) ---
+    # --- Bar Chart---
     st.header(f"📊 Metric Comparison for {single_year}")
     if selected_metrics:
         bar_data = {
@@ -140,7 +130,6 @@ def show_dashboard():
             height=400
         )
         st.altair_chart(bar_chart, use_container_width=True)
-
     # --- Percentage Change Visualization (Altair) ---
     st.header("🔄 Year-wise Percentage Change")
     change_metrics = {
@@ -174,7 +163,6 @@ def show_dashboard():
         st.altair_chart(pct_chart, use_container_width=True)
     else:
         st.info("Please select at least one percentage change metric.")
-
     # --- Revenue Section ---
     st.sidebar.header("🔎 Revenue Filter Options")
     months = st.sidebar.multiselect(
@@ -190,7 +178,6 @@ def show_dashboard():
         "Select Percentage Change Column",
         pct_options
     )
-
     # Filtered data
     filtered_rev_df = df[df["MONTH"].isin(months)]
 
@@ -199,10 +186,8 @@ def show_dashboard():
     Explore monthly tourism revenue and trends.  
     Use the filters to customize your view.  
     """)
-
     # Layout: Two columns for bar and pie chart
     col1, col2 = st.columns(2)
-
     with col1:
         st.subheader("Monthly Revenue")
         bar_chart_rev = alt.Chart(filtered_rev_df).mark_bar(size=40).encode(
@@ -227,8 +212,7 @@ def show_dashboard():
             template="plotly_white"
         )
         st.plotly_chart(fig2, use_container_width=True)
-
-    # Percentage Change Chart (Altair
+    # Percentage Change Chart
     bar_chart = alt.Chart(country_df).mark_bar().encode(
     x=alt.X("COUNTRY:N", sort='-y', title="Country"),
     y=alt.Y(selected_pct, title="Percentage Change (%)"),
@@ -238,9 +222,7 @@ def show_dashboard():
     height=500,
     title=f"{selected_pct} by Country"
 )
-
     st.altair_chart(bar_chart, use_container_width=True)
-
     # Data Table and Download
     with st.expander("📋 Show Data Table"):
         st.dataframe(filtered_rev_df)
@@ -249,12 +231,10 @@ def show_dashboard():
             filtered_rev_df.to_csv(index=False),
             "revenue_filtered.csv"
         )
-
     # --- Country-wise Tourist Arrivals (Altair Bar) ---
     st.header("🌍 Country-wise Tourist Visits to India")
     with st.expander("Show Country-wise Tourist Data"):
         st.dataframe(country_df)
-
     # Choose year to display
     year = st.selectbox(
         "Select Year for Tourist Arrivals",
@@ -262,7 +242,6 @@ def show_dashboard():
         index=0
     )
     arrivals_col = f"NUMBEROFARRIVALS{year}"
-
     tourists_sorted = country_df.sort_values(by=arrivals_col, ascending=False)
     bar_chart_country = alt.Chart(tourists_sorted).mark_bar(size=20).encode(
         x=alt.X(f"{arrivals_col}:Q", title="Tourists"),

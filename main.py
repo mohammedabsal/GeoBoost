@@ -189,19 +189,12 @@ if page == "🏠 Home":
 """,
 unsafe_allow_html=True
 )
-
-    # Title with fade-in effect
-    
     st.markdown("<h1 class='fade-in' style='text-align:center; color:#2E86C1;'>Welcome to GeoBoost Cultural Explorer!</h1>", unsafe_allow_html=True)
-    
     st.markdown(
         "<p class='fade-in' style='text-align:center; font-size:20px;'>Discover India's tourism trends, vibrant art forms, and cultural richness.<br>Navigate through our features to explore, learn, and get inspired!</p>",
         unsafe_allow_html=True
     )
-
     st.markdown("----")
-
-    # Features section with slight animations
     features = [
         {
             "img": "https://cdn-icons-png.flaticon.com/512/854/854878.png",
@@ -234,7 +227,6 @@ unsafe_allow_html=True
             "desc": "Generate your own personalized cultural journey using AI storytelling."
         },
     ]
-
     for i in range(0, len(features), 3):
         cols = st.columns(3)
         for j in range(3):
@@ -249,23 +241,17 @@ unsafe_allow_html=True
                     """, unsafe_allow_html=True)
 
     st.markdown("---")
-
-    # Call-to-action
     st.markdown(
         "<div style='text-align:center; font-size:18px; color:#117A65;'>"
         "✨ Use the sidebar to start your cultural adventure now! ✨"
         "</div>",
         unsafe_allow_html=True
     )
-
-    # Footer
     st.markdown("""
         <div class="footer">
             © 2025 GeoBoost. All rights reserved.
         </div>
     """, unsafe_allow_html=True)
-
-
 elif page == "📊 Tourism Dashboard":
     show_dashboard()
 elif page == "🗺️ Map Explorer":

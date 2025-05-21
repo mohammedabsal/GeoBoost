@@ -4,7 +4,6 @@ from streamlit_lottie import st_lottie
 import requests
 import snowflake.connector
 def show_visit():
-    # Load Lottie animations
     @st.cache_data
     def load_lottie_url(url: str):
         response = requests.get(url)
@@ -15,8 +14,6 @@ def show_visit():
     travel_animation = load_lottie_url("https://assets9.lottiefiles.com/packages/lf20_5ngs2ksb.json")
     eco_friendly_animation = load_lottie_url("https://assets10.lottiefiles.com/packages/lf20_j1adxtyb.json")
     support_locals_animation = load_lottie_url("https://lottie.host/771f24c4-f1d8-4119-8996-97da110c9dbc/5vAAmTcgZJ.json")
-
-    # Inject custom CSS
     st.markdown("""
         <style>
         body {
@@ -50,8 +47,6 @@ def show_visit():
         }
         </style>
     """, unsafe_allow_html=True)
-
-    # Title
     st.markdown("<h1 style='text-align:center; color:#117A65;'>🌿 Responsible Tourism Guide</h1>", unsafe_allow_html=True)
     st.markdown("""
         <div style='text-align:center; font-size:18px;'>
@@ -61,8 +56,6 @@ def show_visit():
         </div>
         <hr>
     """, unsafe_allow_html=True)
-
-    # Load data
     conn = snowflake.connector.connect(
         user=st.secrets["snowflake"]["user"],
         password=st.secrets["snowflake"]["password"],
@@ -73,7 +66,6 @@ def show_visit():
     )
     query = "SELECT * FROM TIMETOVISIT"
     data = pd.read_sql(query, conn)
-    # Sidebar
     if travel_animation:
         st_lottie(travel_animation, height=180, key="travel_animation")
         st.header("🌍 Explore India Mindfully")
@@ -81,13 +73,8 @@ def show_visit():
 
     states = data['STATE_CITY'].unique()
     selected_state = st.selectbox("📍 Choose your destination", states)
-
     info = data[data['STATE_CITY'] == selected_state].iloc[0]
-
-    # Main Content Sections
     st.markdown(f"<div class='visit-card'><div class='visit-section-title'>📍 Destination: <span style='color:#117A65;'>{selected_state}</span></div>", unsafe_allow_html=True)
-
-    # Best Time to Visit
     col1, col2 = st.columns([1, 2])
     with col1:
         if eco_friendly_animation:
@@ -98,8 +85,6 @@ def show_visit():
             <div class='visit-section-content'>{info['BEST_TIME_TO_VISIT']}</div>
         """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-
-    # Support Locals
     st.markdown("<div class='visit-card'>", unsafe_allow_html=True)
     col3, col4 = st.columns([2, 1])
     with col3:
@@ -111,7 +96,6 @@ def show_visit():
         if support_locals_animation:
             st_lottie(support_locals_animation, height=120, key="support_locals_animation")
     st.markdown("</div>", unsafe_allow_html=True)
-
     # Cultural Etiquette & Eco Practices
     st.markdown("<div class='visit-card'>", unsafe_allow_html=True)
     st.markdown(f"""
@@ -121,8 +105,6 @@ def show_visit():
         <div class='visit-section-content'>{info['ECO_FRIENDLY']}</div>
     """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
-
-    # Footer
     st.markdown("""
         <div class="footer">
             © 2025 GeoBoost. All rights reserved.

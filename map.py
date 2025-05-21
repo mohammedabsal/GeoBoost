@@ -25,12 +25,8 @@ def show_map():
     festival_df = pd.read_sql(query_festival, conn)
     food_df = pd.read_sql(query_food, conn)
     kdance_df = pd.read_sql(query_kdance, conn)
-
-    # Sidebar controls
     st.sidebar.title("🌟 Explore India's Diversity")
     layer = st.sidebar.radio("Choose what to explore:", ["Festivals", "Food", "Art"])
-
-    # Base map setup
     m = folium.Map(location=[22.9734, 78.6569], zoom_start=5, tiles="CartoDB positron")
     marker_cluster = MarkerCluster().add_to(m)
 
@@ -97,11 +93,7 @@ def show_map():
                 popup=folium.Popup(popup_content, max_width=350),
                 icon=folium.Icon(color='blue', icon='music', prefix='fa')
             ).add_to(marker_cluster)
-
-    # Render map
     st_folium(m, width=1000, height=600)
-
-    # Footer animation using Lottie
     st.markdown("""
         <div class="footer">
             © 2025 GeoBoost. All rights reserved.

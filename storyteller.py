@@ -12,10 +12,7 @@ def load_lottie_url(url: str):
         return None
     return r.json()
 def show_storyteller():
-    # ============ API KEYS ============
-    co = cohere.Client("1bxiGdTKWg09SX91C9Cl62yzVOGqgyxWfZXBBayA")
-
-    # ============ Load Snippets ============
+    co = st.secrets["COHERE_API_KEY"]
     @st.cache_data
     def load_snippets():
         conn = snowflake.connector.connect(
@@ -28,8 +25,6 @@ def show_storyteller():
         )
         query = "SELECT * FROM SNIPPETS"
         return pd.read_sql(query, conn)
-
-    # ============ Generate Story ============
     def generate_story(regions, interests):
         df = load_snippets()
         filtered = df[df['REGION'].isin(regions) & df['CATEGORY'].isin(interests)]
@@ -69,7 +64,6 @@ def show_storyteller():
             temperature=0.7
         )
         return response.generations[0].text.strip()
-
     # ============ UI Layout ============
     st.markdown("""
         <style>
@@ -94,22 +88,16 @@ def show_storyteller():
             }
         </style>
     """, unsafe_allow_html=True)
-
     st.markdown('<div class="title-text">🎭 Virtual Cultural Storyteller</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Choose your preferences and let AI narrate your dream cultural journey through India! 🌏✨</div>', unsafe_allow_html=True)
-
-    # Load Lottie animation
     lottie_culture = load_lottie_url("https://lottie.host/acf4a3e9-210d-4f5f-ad7b-608c10b058fb/esBW8pQrHR.json")
     st_lottie(lottie_culture, height=250, speed=1)
-
-    # Filters
     data = load_snippets()
     col1, col2 = st.columns(2)
     with col1:
         regions = st.multiselect("🌍 Select Region(s):", sorted(data['REGION'].unique()))
     with col2:
         interests = st.multiselect("🎨 Choose Interests:", ["Dance", "Food", "Art"])
-
     if st.button("✨ Generate My Cultural Story"):
         if not regions or not interests:
             st.warning("⚠️ Please select at least one region and one interest.")

@@ -16,8 +16,6 @@ def show_gallery():
     """, unsafe_allow_html=True)
 
     st.title("India's Art and Culture")
-
-    # Complete list of all festivals with CDN image URLs
     festivals = [
         {
             "name": "Diwali - The Grand Festival Of Lights",
@@ -312,7 +310,6 @@ def show_gallery():
     </body>
     </html>
     """
-
     components.html(custom_html, height=800, scrolling=False)
     st.markdown("""
         <div class="footer">
