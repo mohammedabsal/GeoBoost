@@ -234,7 +234,7 @@ def show_dashboard():
     filtered_country_df = country_df[country_df["COUNTRY"], selected_pct].dropna()
     bar_chart = alt.Chart(filtered_country_df).mark_bar().encode(
     x=alt.X("COUNTRY:N", sort='-y', title="Country"),
-    y=alt.Y("PERCENTAGECHANGE:Q", title="Percentage Change (%)"),
+    y=alt.Y(selected_pct, title="Percentage Change (%)"),
     tooltip=["COUNTRY", "PERCENTAGECHANGE:Q"],
 ).properties(
     width=800,
