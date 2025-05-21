@@ -182,10 +182,10 @@ def show_dashboard():
         default=list(df["MONTH"].unique())
     )
     pct_options = [
-        "PERCENTAGE_CHANGE_2020",
-        "PERCENTAGE_CHANGE_2021",
-        "PERCENTAGE_CHANGE_20_21",
-        "PERCENTAGE_CHANGE_22_21"
+        "PERCENTAGECHANGE2020",
+        "PERCENTAGECHANGE2021",
+        "PERCENTAGECHANGE2020to2021",
+        "PERCENTAGECHANGE2021to2022"
     ]
     selected_pct = st.sidebar.selectbox(
         "Select Percentage Change Column",
