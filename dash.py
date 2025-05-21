@@ -231,12 +231,12 @@ def show_dashboard():
         st.plotly_chart(fig2, use_container_width=True)
 
     # Percentage Change Chart (Altair)
-    st.subheader(f"Monthly {selected_pct.title()}")
+    st.subheader(f"Country - {selected_pct.title()}")
     pct_chart_rev = alt.Chart(country_df).mark_line(point=True).encode(
-    x=alt.X("MONTH:N", title="Month", sort=list(df["MONTH"].unique())),
+    x=alt.X("COUNTRY:N", title="Country", sort=list(df["COUNTRY"].unique())),
     y=alt.Y(f"{selected_pct}:Q", title="Percentage Change (%)"),
     color=alt.value("#E45756"),
-    tooltip=["MONTH", selected_pct]
+    tooltip=["COUNTRY", selected_pct]
 ).properties(
     width="container",
     height=400
