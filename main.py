@@ -266,15 +266,15 @@ unsafe_allow_html=True
     """, unsafe_allow_html=True)
 
 
-elif page == "Tourism Dashboard":
+elif page == "📊 Tourism Dashboard":
     show_dashboard()
-elif page == "Map":
+elif page == "🗺️ Map Explorer":
     show_map()
-elif page == "gallery":
+elif page == "🖼️ Gallery":
     show_gallery()
-elif page == "Art Forms":
+elif page == "🎨 Art Forms":
     show_artforms()
-elif page == "Responsible Tourism Tips":
+elif page == "🌱 Responsible Tourism Tips":
     show_visit()
-elif page == "Story":
+elif page == "📖 AI Storyteller":
     show_storyteller()
