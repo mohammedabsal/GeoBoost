@@ -14,10 +14,17 @@ from visit import show_visit
 from storyteller import show_storyteller
 
 # Sidebar navigation
-page= st.sidebar.selectbox(
-    "Select a page",
-    ["🏠 Home", "Tourism Dashboard", "Map", "gallery", "Art Forms", "Responsible Tourism Tips", "Story"
-     ],
+page = st.sidebar.selectbox(
+    "🌏 Navigate GeoBoost",
+    [
+        "🏠 Home",
+        "📊 Tourism Dashboard",
+        "🗺️ Map Explorer",
+        "🖼️ Gallery",
+        "🎨 Art Forms",
+        "🌱 Responsible Tourism Tips",
+        "📖 AI Storyteller"
+    ],
     index=0
 )
 # Set custom CSS for the sidebar
