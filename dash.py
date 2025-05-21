@@ -232,7 +232,7 @@ def show_dashboard():
 
     # Percentage Change Chart (Altair)
     st.subheader(f"Monthly {selected_pct.title()}")
-    pct_chart_rev = alt.Chart(filtered_rev_df).mark_line(point=True).encode(
+    pct_chart_rev = alt.Chart(country_df).mark_line(point=True).encode(
     x=alt.X("MONTH:N", title="Month", sort=list(df["MONTH"].unique())),
     y=alt.Y(f"{selected_pct}:Q", title="Percentage Change (%)"),
     color=alt.value("#E45756"),
