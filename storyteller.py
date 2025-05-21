@@ -90,7 +90,7 @@ def show_storyteller():
     """, unsafe_allow_html=True)
     st.markdown('<div class="title-text">🎭 Virtual Cultural Storyteller</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Choose your preferences and let AI narrate your dream cultural journey through India! 🌏✨</div>', unsafe_allow_html=True)
-    lottie_culture = load_lottie_url("https://lottie.host/acf4a3e9-210d-4f5f-ad7b-608c10b058fb/esBW8pQrHR.json")
+    lottie_culture = load_lottie_url("https://lottie.host/00a25b81-7f6d-47a3-b9b8-cd982bfeac57/0Csz7nhtoI.json")
     st_lottie(lottie_culture, height=250, speed=1)
     data = load_snippets()
     col1, col2 = st.columns(2)
