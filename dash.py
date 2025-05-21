@@ -230,9 +230,8 @@ def show_dashboard():
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # Percentage Change Chart (Altair)
-    filtered_country_df = country_df[country_df["COUNTRY"], selected_pct].dropna()
-    bar_chart = alt.Chart(filtered_country_df).mark_bar().encode(
+    # Percentage Change Chart (Altair
+    bar_chart = alt.Chart(country_df).mark_bar().encode(
     x=alt.X("COUNTRY:N", sort='-y', title="Country"),
     y=alt.Y(selected_pct, title="Percentage Change (%)"),
     tooltip=["COUNTRY", "PERCENTAGECHANGE:Q"],
