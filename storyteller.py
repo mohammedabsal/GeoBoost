@@ -64,7 +64,6 @@ def show_storyteller():
             temperature=0.7
         )
         return response.generations[0].text.strip()
-    # ============ UI Layout ============
     st.markdown("""
         <style>
             .title-text {
@@ -90,8 +89,6 @@ def show_storyteller():
     """, unsafe_allow_html=True)
     st.markdown('<div class="title-text">🎭 Virtual Cultural Storyteller</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Choose your preferences and let AI narrate your dream cultural journey through India! 🌏✨</div>', unsafe_allow_html=True)
-    # lottie_culture = load_lottie_url("https://lottie.host/00a25b81-7f6d-47a3-b9b8-cd982bfeac57/0Csz7nhtoI.json")
-    # st_lottie(lottie_culture, height=250, speed=1)
     data = load_snippets()
     col1, col2 = st.columns(2)
     with col1:

@@ -22,70 +22,80 @@ def show_gallery():
             "description": "Diwali, one of the most prominent Hindu festivals of India, is celebrated with a lot of pomp and show. During this festival of lights, houses are decorated with clay lamps, candles, and Ashok leaves. People wear new clothes, participate in family puja, burst crackers, and share sweets with friends, families, and neighbours. It is the most popular festival in India",
             "things_to_do": "Light diyas, decorate your home, share sweets and gifts with family and loved ones",
             "date": "October 31(Thursday)",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/diw.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/diw.jpg",
+            "link": "https://en.wikipedia.org/wiki/Diwali"
         },
         {
             "name": "Holi-The Vibrant Festival Of Colours",
             "description": "Holi, the vibrant Festival of Colours, is one of India's most famous celebrations. On Holika Dahan, huge bonfires are lit with singing and dancing around them. The next day, people gather to splash each other with colorful powders, water guns, and balloons, filling the streets with joy and hues. It's a lively and joyous celebration of color, unity, and the arrival of spring.",
             "things_to_do": "",
             "date": "March 14,2025(Friday)",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/holi.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/holi.jpg",
+            "link": "https://en.wikipedia.org/wiki/Holi"
         },
         {
             "name": "Dussehra-Witness The Triumph Of Good Over Evil",
             "description": "Dussehra, or Vijayadashami, is a major Hindu festival celebrating the victory of good over evil. The burning of Ravana's effigy after 10 days of *Ramlila* is the main highlight. In Mysore, there's a grand procession with the palace lit up, while Kullu celebrates by welcoming mountain deities for 10 days. Each region adds its own unique touch to the festivities.",
             "things_to_do": "",
             "date": "October 12,2024(Saturday)",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/dhusu.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/dhusu.jpg",
+            "link": "https://en.wikipedia.org/wiki/Dussehra"
         },
         {
             "name": "Durga Pooja",
             "description": "Durga Puja, a grand Bengali celebration, is one of India's most cherished festivals. The 10-day event combines fasting, feasting, and worship of Goddess Durga, accompanied by cultural performances. Stunning Durga idols are placed in intricately designed pandals, where people gather in traditional attire for prayers, festivities, and pandal-hopping. The blend of devotion, artistry, and community spirit makes Durga Puja a truly vibrant spectacle.",
             "things_to_do": "",
             "date": "24th October(Tuesday)",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/dur.png"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/dur.png",
+            "link": "https://en.wikipedia.org/wiki/Durga_Puja"
         },
         {
             "name": "Ramadan / Eid –Ul-Fitr",
             "description": "Ramadan is the ninth and holiest month in the Islamic calendar, observed by Muslims through fasting from dawn to sunset, prayer, reflection, and charity. Fasting, or *sawm*, fosters self-discipline and empathy for the less fortunate. The month ends with Eid al-Fitr, a celebration of breaking the fast with prayers, feasts, and family gatherings",
             "things_to_do": "",
             "date": "March 31st(Monday),2025",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/ramadan_1.jpeg "
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/ramadan_1.jpeg ",
+            "link": "https://en.wikipedia.org/wiki/Ramadan"
         },
         {
             "name": "Christmas",
             "description": "Christmas is celebrated on December 25th, marking the birth of Jesus Christ. It is observed by Christians worldwide with church services, caroling, and gift-giving. The holiday features festive decorations, family gatherings, and a spirit of joy, peace, and goodwill, emphasizing love and generosity.",
             "things_to_do": "",
             "date": "25th December,2024",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/christ.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/christ.jpg",
+            "link": "https://en.wikipedia.org/wiki/Christmas"
         },
         {
             "name": "Onam",
             "description": "Onam, a major festival in India, is celebrated with vibrant traditions and community spirit. People wear traditional attire, decorate homes with Pookalam (floral patterns), and enjoy Onasadya, a grand meal of around 13 dishes. Festivities include Vallamkali (snake boat race), Kaikottikali (clap dance), Kathakali performances, and the lively Pulikali procession, where participants are painted as tigers and hunters. This festival marks the return of the mythical King Mahabali. Key highlights include the snake boat races, Kaikottikali dances, and majestic elephant processions. It takes place in Kerala during August or September.",
             "things_to_do": "",
             "date": "25th December,2024",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/onam_1.jpeg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/onam_1.jpeg",
+            "link": "https://en.wikipedia.org/wiki/Onam"
         },
         {
             "name": "Krishna Janmashtami",
             "description": "Janmashtami, a significant Hindu festival, marks the birth of Lord Krishna. Celebrated with fasting, temple visits, and midnight prayers, the festivities are especially grand in Mathura and Vrindavan. Children dress as Krishna, and temples showcase \"jhankis\" depicting his life. This festival occurs on the 8th day of Krishna Paksha in Bhadrapada, usually in August or September.",
             "things_to_do": "",
             "date": "25th December,2024",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/krishna_1.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/krishna_1.jpg",
+            "link": "https://en.wikipedia.org/wiki/Krishna_Janmashtami"
         },
         {
             "name": "Bakrid",
             "description": "Bakrid, also known as Eid al-Adha, is an important Islamic festival celebrated with prayers, charity, and the symbolic sacrifice of an animal. It honors the willingness of Prophet Ibrahim to sacrifice his son in obedience to God. After prayers at the mosque, families gather for a feast, and the meat from the sacrifice is distributed among family, friends, and the needy. The festival promotes the spirit of giving and gratitude. Bakrid is observed on the 10th day of Dhu al-Hijjah, the last month of the Islamic lunar calendar.",
             "things_to_do": "",
             "date": "Friday, June 6th,2025",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/eid.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/eid.jpg",
+            "link": "https://en.wikipedia.org/wiki/Eid_al-Adha"
         },
         {
             "name": "Easter",
             "description": "Easter is a major Christian festival celebrating the resurrection of Jesus Christ from the dead. The day is marked with special church services, prayers, and joyful celebrations. Families often gather for festive meals, and traditions like Easter egg hunts and gifting chocolate eggs symbolize new life and rebirth. Easter is observed on the first Sunday after the first full moon following the spring equinox, usually in March or April. It is a time of hope, renewal, and joy for Christians worldwide.",
             "things_to_do": "",
             "date": "Sunday, April 20, 2025.",
-            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/church.jpg"
+            "image": "https://raw.githubusercontent.com/mohammedabsal/GeoBoost/main/assest/church.jpg",
+            "link": "https://en.wikipedia.org/wiki/Easter"
         }
     ]
 
@@ -100,7 +110,7 @@ def show_gallery():
                 <div class="des">{festival['description']}</div>
                 {f'<div class="des">{festival["things_to_do"]}</div>' if festival["things_to_do"] else ""}
                 <div class="des">{festival['date']}</div>
-                <button>See More</button>
+                <a href="{festival.get('link', '#')}" target="_blank">><button>See More</button></a>
             </div>
         </div>
         """
