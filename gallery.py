@@ -110,7 +110,7 @@ def show_gallery():
                 <div class="des">{festival['description']}</div>
                 {f'<div class="des">{festival["things_to_do"]}</div>' if festival["things_to_do"] else ""}
                 <div class="des">{festival['date']}</div>
-                <a href="{festival.get('link', '#')}" target="_blank">><button>See More</button></a>
+                <a href="{festival.get('link', '#')}" target="_blank"><button>See More</button></a>
             </div>
         </div>
         """
