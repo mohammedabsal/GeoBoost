@@ -91,5 +91,3 @@ def show_artforms():
             © 2025 GeoBoost. All rights reserved.
         </div>
     """, unsafe_allow_html=True)
-
-show_artforms()

@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 from streamlit_lottie import st_lottie
 import requests
-import snowflake.connector
+import supabase
+from supabase import create_client, Client
+from map import SUPABASE_URL
 def show_visit():
     @st.cache_data
     def load_lottie_url(url: str):
@@ -56,16 +58,21 @@ def show_visit():
         </div>
         <hr>
     """, unsafe_allow_html=True)
-    conn = snowflake.connector.connect(
-        user=st.secrets["snowflake"]["user"],
-        password=st.secrets["snowflake"]["password"],
-        account=st.secrets["snowflake"]["account"],
-        warehouse=st.secrets["snowflake"]["warehouse"],
-        database=st.secrets["snowflake"]["database"],
-        schema=st.secrets["snowflake"]["schema"]
-    )
-    query = "SELECT * FROM TIMETOVISIT"
-    data = pd.read_sql(query, conn)
+    # Load Data
+    SUPABASE_URL = "https://ilbfnsqeymeohymvllyl.supabase.co"
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    def load_data():
+        try:
+            response = supabase.table("timetovisit").select("*").execute()
+            data = response.data
+            if not data:
+                return pd.DataFrame()
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Supabase error: {e}")
+            return pd.DataFrame()
+    data = load_data()
     if travel_animation:
         st_lottie(travel_animation, height=180, key="travel_animation")
         st.header("🌍 Explore India Mindfully")

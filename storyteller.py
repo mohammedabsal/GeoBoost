@@ -1,10 +1,14 @@
 import streamlit as st
 import pandas as pd
-import snowflake.connector
 import requests
+import supabase
+from supabase import create_client, Client
 import time
 import cohere
 from streamlit_lottie import st_lottie
+SUPABASE_URL = "https://ilbfnsqeymeohymvllyl.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 @st.cache_data
 def load_lottie_url(url: str):
     r = requests.get(url)
@@ -15,16 +19,16 @@ def show_storyteller():
     co = cohere.Client(st.secrets["COHERE_API_KEY"])
     @st.cache_data
     def load_snippets():
-        conn = snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-        query = "SELECT * FROM SNIPPETS"
-        return pd.read_sql(query, conn)
+        try:
+            response = supabase.table("snippets").select("*").execute()
+            data = response.data
+            if not data:
+                return pd.DataFrame()
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Supabase error: {e}")
+            return pd.DataFrame()
+
     def generate_story(regions, interests):
         df = load_snippets()
         filtered = df[df['REGION'].isin(regions) & df['CATEGORY'].isin(interests)]

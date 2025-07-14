@@ -264,4 +264,3 @@ def show_dashboard():
             © 2025 GeoBoost. All rights reserved.
         </div>
     """, unsafe_allow_html=True)
-show_dashboard()
