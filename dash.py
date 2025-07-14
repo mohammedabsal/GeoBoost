@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import snowflake.connector
+from supabase import create_client, Client
 import plotly.express as px
 import altair as alt
 import warnings
@@ -19,38 +19,35 @@ def show_dashboard():
     st.markdown("<div class='main-title'>🌏 GeoBoost Tourism & Culture Dashboard</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>Explore India's tourism trends, cultural richness, and vibrant art forms. Use the sidebar to navigate and filter data. ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-    def get_snowflake_connection():
-        return snowflake.connector.connect(
-            user=st.secrets["snowflake"]["user"],
-            password=st.secrets["snowflake"]["password"],
-            account=st.secrets["snowflake"]["account"],
-            warehouse=st.secrets["snowflake"]["warehouse"],
-            database=st.secrets["snowflake"]["database"],
-            schema=st.secrets["snowflake"]["schema"]
-        )
-    conn = get_snowflake_connection()
-    # Load data from Snowflake
-    @st.cache_data(ttl=600)
-    def load_revenue_data():
-        df_revenue = pd.read_sql("SELECT * FROM REVENUE", conn)
-        return df_revenue
-    @st.cache_data(ttl=600)
-    def load_country_data():
-        df_country = pd.read_sql("SELECT * FROM COUNTRY", conn)
-        return df_country
-    @st.cache_data(ttl=600)
-    def load_inbound_data():
-        df_inbound = pd.read_sql("SELECT * FROM INBOUNDTOURISM", conn)
-        return df_inbound
-    df = load_revenue_data()
-    country_df = load_country_data()
-    inbound_df = load_inbound_data()
-    inbound_df.columns = [c.strip() for c in inbound_df.columns]
-    for col in inbound_df.columns:
+    SUPABASE_URL = "https://ilbfnsqeymeohymvllyl.supabase.co"
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    def load_table(table_name):
         try:
-            inbound_df[col] = pd.to_numeric(inbound_df[col])
-        except Exception:
-            continue
+            response = supabase.table(table_name).select("*").execute()
+            data = response.data
+            if not data:
+                st.warning(f"No data found in table '{table_name}'.")
+                return pd.DataFrame()
+            df = pd.DataFrame(data)
+            # Do NOT convert columns to uppercase
+            return df
+        except Exception as e:
+            st.error(f"Supabase error loading '{table_name}': {e}")
+            return pd.DataFrame()
+
+    # Load all datasets (all lowercase table names)
+    df = load_table("revenue")
+    country_df = load_table("country")
+    inbound_df = load_table("inboundtourism")
+
+    # Debug: print columns if data is missing
+    if df.empty or country_df.empty or inbound_df.empty:
+        st.write("Revenue columns:", df.columns.tolist())
+        st.write("Country columns:", country_df.columns.tolist())
+        st.write("InboundTourism columns:", inbound_df.columns.tolist())
+        st.stop()
+
     # Sidebar filters
     st.sidebar.header("🔎 Filter Options")
     metrics = {
@@ -65,19 +62,19 @@ def show_dashboard():
     )
     year_range = st.sidebar.slider(
         "Select Year Range",
-        int(inbound_df["YEAR"].min()),
-        int(inbound_df["YEAR"].max()),
-        (int(inbound_df["YEAR"].min()), int(inbound_df["YEAR"].max()))
+        int(inbound_df["Year"].min()),
+        int(inbound_df["Year"].max()),
+        (int(inbound_df["Year"].min()), int(inbound_df["Year"].max()))
     )
     single_year = st.sidebar.selectbox(
         "Select Year for Comparison",
-        sorted(inbound_df["YEAR"].unique()),
-        index=len(inbound_df["YEAR"].unique())-1
+        sorted(inbound_df["Year"].unique()),
+        index=len(inbound_df["Year"].unique())-1
     )
 
     # Filter data by year range
-    filtered_df = inbound_df[(inbound_df["YEAR"] >= year_range[0]) & (inbound_df["YEAR"] <= year_range[1])]
-    single_year_df = inbound_df[inbound_df["YEAR"] == single_year]
+    filtered_df = inbound_df[(inbound_df["Year"] >= year_range[0]) & (inbound_df["Year"] <= year_range[1])]
+    single_year_df = inbound_df[inbound_df["Year"] == single_year]
 
     st.title("🇮🇳 India Inbound Tourism Dashboard")
     st.markdown("""
@@ -92,16 +89,16 @@ def show_dashboard():
     st.header("📈 YEAR-wise Tourism Trends")
     if selected_metrics:
         melted = filtered_df.melt(
-            id_vars=["YEAR"],
+            id_vars=["Year"],
             value_vars=[metrics[m] for m in selected_metrics],
             var_name="Metric",
             value_name="Value"
         )
         chart = alt.Chart(melted).mark_line(point=True).encode(
-            x=alt.X("YEAR:O", title="Year"),
+            x=alt.X("Year:O", title="Year"),
             y=alt.Y("Value:Q", title="Number of Tourists (Million)"),
             color=alt.Color("Metric:N", title="Metric"),
-            tooltip=["YEAR", "Metric", "Value"]
+            tooltip=["Year", "Metric", "Value"]
         ).properties(
             width="container",
             height=400
@@ -130,6 +127,7 @@ def show_dashboard():
             height=400
         )
         st.altair_chart(bar_chart, use_container_width=True)
+
     # --- Percentage Change Visualization (Altair) ---
     st.header("🔄 Year-wise Percentage Change")
     change_metrics = {
@@ -144,7 +142,7 @@ def show_dashboard():
     )
     if selected_change:
         melted = filtered_df.melt(
-            id_vars=["YEAR"],
+            id_vars=["Year"],
             value_vars=[change_metrics[m] for m in selected_change],
             var_name="Metric",
             value_name="Percentage Change"
@@ -152,10 +150,10 @@ def show_dashboard():
         metric_name_map = {v: k for k, v in change_metrics.items()}
         melted["Metric"] = melted["Metric"].map(metric_name_map)
         pct_chart = alt.Chart(melted).mark_line(point=True).encode(
-            x=alt.X("YEAR:O", title="Year"),
+            x=alt.X("Year:O", title="Year"),
             y=alt.Y("Percentage Change:Q", title="Percentage Change (%)"),
             color=alt.Color("Metric:N", title="Metric", scale=alt.Scale(scheme="pastel1")),
-            tooltip=["YEAR", "Metric", "Percentage Change"]
+            tooltip=["Year", "Metric", "Percentage Change"]
         ).properties(
             width="container",
             height=400
@@ -163,6 +161,7 @@ def show_dashboard():
         st.altair_chart(pct_chart, use_container_width=True)
     else:
         st.info("Please select at least one percentage change metric.")
+
     # --- Revenue Section ---
     st.sidebar.header("🔎 Revenue Filter Options")
     months = st.sidebar.multiselect(
@@ -171,8 +170,10 @@ def show_dashboard():
         default=list(df["MONTH"].unique())
     )
     pct_options = [
-        "PERCENTAGECHANGE2020",
-        "PERCENTAGECHANGE2021"
+        "PercentageChange2020",
+        "PercentageChange2021",
+        "PercentageChange2022a",
+        "PercentageChange2022b"
     ]
     selected_pct = st.sidebar.selectbox(
         "Select Percentage Change Column",
@@ -212,17 +213,19 @@ def show_dashboard():
             template="plotly_white"
         )
         st.plotly_chart(fig2, use_container_width=True)
-    # Percentage Change Chart
+
+    # Percentage Change Chart by Country
     bar_chart = alt.Chart(country_df).mark_bar().encode(
-    x=alt.X("COUNTRY:N", sort='-y', title="Country"),
-    y=alt.Y(selected_pct, title="Percentage Change (%)"),
-    tooltip=["COUNTRY", selected_pct],
-).properties(
-    width=800,
-    height=500,
-    title=f"{selected_pct} by Country"
-)
+        x=alt.X("COUNTRY:N", sort='-y', title="Country"),
+        y=alt.Y(selected_pct, title="Percentage Change (%)"),
+        tooltip=["COUNTRY", selected_pct],
+    ).properties(
+        width=800,
+        height=500,
+        title=f"{selected_pct} by Country"
+    )
     st.altair_chart(bar_chart, use_container_width=True)
+
     # Data Table and Download
     with st.expander("📋 Show Data Table"):
         st.dataframe(filtered_rev_df)
@@ -231,6 +234,7 @@ def show_dashboard():
             filtered_rev_df.to_csv(index=False),
             "revenue_filtered.csv"
         )
+
     # --- Country-wise Tourist Arrivals (Altair Bar) ---
     st.header("🌍 Country-wise Tourist Visits to India")
     with st.expander("Show Country-wise Tourist Data"):
@@ -241,7 +245,7 @@ def show_dashboard():
         ["2019", "2020", "2021", "2022"],
         index=0
     )
-    arrivals_col = f"NUMBEROFARRIVALS{year}"
+    arrivals_col = f"NumberofArrivals{year}"
     tourists_sorted = country_df.sort_values(by=arrivals_col, ascending=False)
     bar_chart_country = alt.Chart(tourists_sorted).mark_bar(size=20).encode(
         x=alt.X(f"{arrivals_col}:Q", title="Tourists"),
@@ -254,8 +258,10 @@ def show_dashboard():
         title=f"Number of Tourists by Country ({year})"
     )
     st.altair_chart(bar_chart_country, use_container_width=True)
+
     st.markdown("""
         <div class="footer">
             © 2025 GeoBoost. All rights reserved.
         </div>
     """, unsafe_allow_html=True)
+show_dashboard()
