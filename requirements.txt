@@ -9,4 +9,5 @@ streamlit-lottie
 snowflake-connector-python
 requests
 cohere
+supabase
 pyarrow<19.0.0
