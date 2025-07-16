@@ -6,9 +6,8 @@ import folium
 from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 import streamlit as st
-SUPABASE_URL = "https://ilbfnsqeymeohymvllyl.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 def show_map():
     st.title("🗺️ Cultural Map")
     st.markdown("""

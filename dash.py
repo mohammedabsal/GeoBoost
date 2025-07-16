@@ -19,8 +19,8 @@ def show_dashboard():
     st.markdown("<div class='main-title'>🌏 GeoBoost Tourism & Culture Dashboard</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>Explore India's tourism trends, cultural richness, and vibrant art forms. Use the sidebar to navigate and filter data. ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-    SUPABASE_URL = "https://ilbfnsqeymeohymvllyl.supabase.co"
-    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     def load_table(table_name):
         try:

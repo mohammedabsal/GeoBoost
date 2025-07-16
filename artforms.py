@@ -5,10 +5,8 @@ def show_artforms():
     st.markdown("<h1 style='text-align:center;'>🎨 Art Forms Exploration</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:18px;'>✨ Explore various art forms and their ORIGINs. Use the filters to discover hidden gems! ✨</p>", unsafe_allow_html=True)
     st.markdown("---")
-
-    # Get Supabase credentials
-    SUPABASE_URL="https://ilbfnsqeymeohymvllyl.supabase.co"
-    SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYmZuc3FleW1lb2h5bXZsbHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzk0NDIsImV4cCI6MjA2NTkxNTQ0Mn0.gKRFPn_ntqTg4kHta42c7Y2fgEnN8kGuBQFz3FP2IpA"
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
     # Load Data
