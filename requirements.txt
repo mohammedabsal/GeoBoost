@@ -1,13 +1,13 @@
 streamlit==1.24.1
+pillow==9.5.0
 matplotlib==3.8.4
 pandas>=2.0.0
-numpy
+numpy==1.26.4
 plotly>=5.20.0
-folium
+folium==0.15.1
 streamlit-folium
 streamlit-lottie
-snowflake-connector-python
 requests
 cohere
-supabase
+supabase-py
 pyarrow<19.0.0
