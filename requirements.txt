@@ -9,5 +9,5 @@ streamlit-folium
 streamlit-lottie
 requests
 cohere
-supabase-py==1.0.3
+supabase-py==1.2.0
 pyarrow<19.0.0
