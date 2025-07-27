@@ -5,9 +5,9 @@ pandas>=2.0.0
 numpy==1.26.4
 plotly>=5.20.0
 folium==0.15.1
-streamlit-folium==0.13.0
-streamlit-lottie==0.0.5
+streamlit-folium
+streamlit-lottie
 requests
-cohere==4.40
+cohere
 supabase
 pyarrow<19.0.0
